@@ -18,6 +18,8 @@ const Admin = () => {
     const [loading, setLoading] = useState(true);
     const [editModalUser, setEditModalUser] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [systemAlert, setSystemAlert] = useState(null);
+    const prevPendingCount = React.useRef(0);
 
     const fetchAllData = async () => {
         try {
@@ -30,11 +32,34 @@ const Admin = () => {
                 fetch(`${import.meta.env.VITE_API_URL}/api/wallets`)
             ]);
 
-            setUsers(await uRes.json());
-            setStats(await sRes.json());
-            setDeposits(await dRes.json());
-            setTrades(await tRes.json());
-            setWallets(await wRes.json());
+            const dData = await dRes.json();
+            const tData = await tRes.json();
+            const wData = await wRes.json();
+            const sData = await sRes.json();
+            const uData = await uRes.json();
+
+            // Detect new deposits for alerts
+            const currentPending = dData.filter(d => d.status === 'pending');
+            if (currentPending.length > prevPendingCount.current) {
+                const newOne = currentPending[0]; // Most recent
+                const msg = `You have received a new deposit request for $${newOne.amount}`;
+                
+                // Voice Alert
+                const utterance = new SpeechSynthesisUtterance(msg);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.1; 
+                window.speechSynthesis.speak(utterance);
+                
+                // Visual Alert Modal
+                setSystemAlert({ amount: newOne.amount, email: newOne.users?.email });
+            }
+            prevPendingCount.current = currentPending.length;
+
+            setUsers(uData);
+            setStats(sData);
+            setDeposits(dData);
+            setTrades(tData);
+            setWallets(wData);
         } catch (e) {
             console.error('Fetch error:', e);
         } finally {
@@ -286,21 +311,38 @@ const Admin = () => {
                                     <tbody>
                                         {deposits.map(d => (
                                             <tr key={d.id}>
-                                                <td>{d.users?.email}</td>
-                                                <td><span style={{ fontWeight: 700, color: '#10B981' }}>DEPOSIT</span></td>
-                                                <td style={{ fontWeight: 800 }}>${d.amount}</td>
                                                 <td>
-                                                    <span className={`admin-badge ${d.status === 'approved' ? 'success' : d.status === 'pending' ? 'warning' : 'danger'}`}>
-                                                        {d.status}
+                                                    <div style={{ fontWeight: 700 }}>{d.users?.email}</div>
+                                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{d.coin} network</div>
+                                                </td>
+                                                <td><span style={{ fontWeight: 800, color: 'var(--primary)' }}>DEPOSIT</span></td>
+                                                <td style={{ fontWeight: 900, color: 'var(--text-primary)' }}>${Number(d.amount).toFixed(2)}</td>
+                                                <td>
+                                                    <span className={`admin-badge ${d.status === 'success' ? 'success' : d.status === 'pending' ? 'warning' : 'danger'}`}>
+                                                        {d.status.charAt(0).toUpperCase() + d.status.slice(1)}
                                                     </span>
                                                 </td>
                                                 <td>{new Date(d.created_at).toLocaleDateString()}</td>
                                                 <td style={{ textAlign: 'right' }}>
-                                                    {d.status === 'pending' && (
-                                                        <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                                                            <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'approved' })} className="admin-mini-btn success">Approve</button>
-                                                            <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} className="admin-mini-btn danger">Reject</button>
+                                                    {d.status === 'pending' ? (
+                                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                            <button 
+                                                                onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'success' })} 
+                                                                className="admin-mini-btn success"
+                                                                style={{ padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}
+                                                            >
+                                                                Approve
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} 
+                                                                className="admin-mini-btn danger"
+                                                                style={{ padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}
+                                                            >
+                                                                Reject
+                                                            </button>
                                                         </div>
+                                                    ) : (
+                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>Processed</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -390,6 +432,37 @@ const Admin = () => {
                                 <button type="button" onClick={() => setEditModalUser(null)} className="admin-btn-secondary" style={{ flex: 1 }}>Cancel</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* System Notification Modal */}
+            {systemAlert && (
+                <div className="modal-overlay" style={{ zIndex: 10001, background: 'rgba(0,0,0,0.9)' }}>
+                    <div className="modal-content" style={{ textAlign: 'center', padding: '2.5rem', border: '2px solid var(--primary)', animation: 'slide-up 0.3s ease-out' }}>
+                        <div style={{ color: 'var(--primary)', marginBottom: '1rem' }}><DollarSign size={48} /></div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>New Deposit Alert!</h2>
+                        <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                            <strong style={{ color: 'var(--text-primary)' }}>{systemAlert.email}</strong> has sent a deposit request:
+                        </p>
+                        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '2rem' }}>
+                            ${Number(systemAlert.amount).toFixed(2)}
+                        </div>
+                        <button 
+                            className="admin-btn-primary" 
+                            style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem' }}
+                            onClick={() => {
+                                setSystemAlert(null);
+                                setActiveTab('Finance');
+                            }}
+                        >
+                            Review & Approve
+                        </button>
+                        <div 
+                            style={{ marginTop: '1.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'underline' }}
+                            onClick={() => setSystemAlert(null)}
+                        >
+                            Dismiss
+                        </div>
                     </div>
                 </div>
             )}
