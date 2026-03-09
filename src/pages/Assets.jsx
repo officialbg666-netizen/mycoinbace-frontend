@@ -29,8 +29,8 @@ const Assets = () => {
     return (
         <div className="animate-fade-in" style={{ padding: '0 1rem 5rem 1rem' }}>
             <header style={{ padding: '1rem 0', display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <Link to="/dashboard" style={{ color: 'white', marginRight: '1rem' }}><ChevronLeft /></Link>
-                <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>My Assets</h1>
+                <Link to="/dashboard" style={{ color: 'var(--text-primary)', marginRight: '1rem' }}><ChevronLeft /></Link>
+                <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>My Assets</h1>
             </header>
 
             <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', marginBottom: '2rem', background: 'linear-gradient(135deg, var(--primary-glow), transparent)' }}>

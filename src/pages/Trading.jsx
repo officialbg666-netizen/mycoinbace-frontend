@@ -76,7 +76,7 @@ const Trading = () => {
         <div className="animate-fade-in" style={{ paddingBottom: '110px', background: 'var(--bg-dark)', minHeight: '100vh' }}>
             {/* Header */}
             <header className="flex-between" style={{ padding: '0.75rem 1rem', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-light)' }}>
-                <Link to="/dashboard" style={{ color: 'white' }}><ChevronLeft /></Link>
+                <Link to="/dashboard" style={{ color: 'var(--text-primary)' }}><ChevronLeft /></Link>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <img 
                         src={`https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/${asset.split('/')[0].toLowerCase()}.png`} 
@@ -84,7 +84,7 @@ const Trading = () => {
                         alt={asset} 
                         style={{ width: '22px', height: '22px' }} 
                     />
-                    <div style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '0.5px' }}>{asset}</div>
+                    <div style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '0.5px', color: 'var(--text-primary)' }}>{asset}</div>
                 </div>
                 <Link to="/history" style={{ color: 'var(--primary)' }}><History size={22} /></Link>
             </header>

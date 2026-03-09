@@ -1,25 +1,25 @@
 :root {
-  /* High-Visibility Midnight Azure Theme */
-  --bg-dark: #0a0e17;
-  --bg-surface: #161d2a;
-  --bg-surface-light: #222c3f;
+  /* Professional 'Carbon Pro' Refined Dark Theme */
+  --bg-dark: #0b0e11;
+  --bg-surface: #1e2329;
+  --bg-surface-light: #2b3139;
   
   --primary: #f0b90b; 
-  --primary-glow: rgba(240, 185, 11, 0.2);
+  --primary-glow: rgba(240, 185, 11, 0.15);
   
   --success: #0ecb81;
   --success-bg: rgba(14, 203, 129, 0.1);
   --danger: #f6465d;
   --danger-bg: rgba(246, 70, 93, 0.1);
   
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --text-disabled: #475569;
+  --text-primary: #eaecef;
+  --text-secondary: #848e9c;
+  --text-disabled: #474d57;
   
-  --border-light: #2d3748;
+  --border-light: #2b3139;
   --border-active: #f0b90b;
 
-  --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 12px 48px rgba(0, 0, 0, 0.5);
 }
 
 html, body {

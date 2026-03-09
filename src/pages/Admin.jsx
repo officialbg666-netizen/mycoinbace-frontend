@@ -91,28 +91,28 @@ const Admin = () => {
             {/* Stats Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
                 <div className="admin-stat-card">
-                    <div className="icon" style={{ background: '#EEF2FF', color: '#4F46E5' }}><Users size={24} /></div>
+                    <div className="icon" style={{ background: 'var(--bg-surface-light)', color: 'var(--primary)' }}><Users size={24} /></div>
                     <div>
                         <div className="label">Total Users</div>
                         <div className="value">{stats.totalUsers.toLocaleString()}</div>
                     </div>
                 </div>
                 <div className="admin-stat-card">
-                    <div className="icon" style={{ background: '#ECFDF5', color: '#10B981' }}><UserCheck size={24} /></div>
+                    <div className="icon" style={{ background: 'var(--success-bg)', color: 'var(--success)' }}><UserCheck size={24} /></div>
                     <div>
                         <div className="label">Active Users</div>
                         <div className="value">{stats.activeUsers.toLocaleString()}</div>
                     </div>
                 </div>
                 <div className="admin-stat-card">
-                    <div className="icon" style={{ background: '#FFF7ED', color: '#F97316' }}><Bell size={24} /></div>
+                    <div className="icon" style={{ background: 'var(--bg-surface-light)', color: 'var(--primary)' }}><Bell size={24} /></div>
                     <div>
                         <div className="label">Registrations</div>
                         <div className="value">{stats.newUsers}</div>
                     </div>
                 </div>
                 <div className="admin-stat-card">
-                    <div className="icon" style={{ background: '#F5F3FF', color: '#8B5CF6' }}><DollarSign size={24} /></div>
+                    <div className="icon" style={{ background: 'var(--bg-surface-light)', color: 'var(--success)' }}><DollarSign size={24} /></div>
                     <div>
                         <div className="label">System Balance</div>
                         <div className="value">${stats.netFlow.toFixed(2)}</div>
@@ -178,8 +178,8 @@ const Admin = () => {
                             <td>
                                 <span style={{ 
                                     padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800,
-                                    background: u.role === 'admin' ? '#FEE2E2' : '#EFF6FF',
-                                    color: u.role === 'admin' ? '#B91C1C' : '#2563EB'
+                                    background: u.role === 'admin' ? 'var(--danger-bg)' : 'var(--bg-surface-light)',
+                                    color: u.role === 'admin' ? 'var(--danger)' : 'var(--primary)'
                                 }}>
                                     {u.role.toUpperCase()}
                                 </span>
@@ -404,10 +404,10 @@ const Admin = () => {
                 }
                 .admin-sidebar {
                     width: 280px;
-                    background: #111827;
+                    background: var(--bg-surface);
                     display: flex;
                     flex-direction: column;
-                    color: white;
+                    color: var(--text-primary);
                     border-right: 1px solid var(--border-light);
                 }
                 .admin-logo-area {
@@ -417,19 +417,19 @@ const Admin = () => {
                     gap: 12px;
                     font-weight: 900;
                     letter-spacing: 0.5px;
-                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                    border-bottom: 1px solid var(--border-light);
                 }
                 .admin-side-nav { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 5px; }
                 .nav-item {
                     display: flex; align-items: center; gap: 12px; padding: 0.8rem 1rem; border-radius: 8px;
-                    background: transparent; color: #9CA3AF; border: none; cursor: pointer; font-weight: 500;
+                    background: transparent; color: var(--text-secondary); border: none; cursor: pointer; font-weight: 600;
                     transition: all 0.2s; text-align: left;
                 }
-                .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+                .nav-item:hover { color: var(--text-primary); background: var(--bg-surface-light); }
                 .nav-item.active { background: var(--primary); color: black; }
-                .admin-user-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+                .admin-user-footer { padding: 1.5rem; border-top: 1px solid var(--border-light); }
                 .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: black; display: flex; align-items: center; justifyContent: center; font-weight: 800; font-size: 0.8rem; }
-                .logout-btn { width: 100%; text-align: left; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #EF4444; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+                .logout-btn { width: 100%; text-align: left; background: transparent; border: 1px solid var(--border-light); color: var(--danger); padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
 
                 .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
                 .admin-top-bar { height: 64px; background: var(--bg-surface); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; px: 2rem; justifyContent: space-between; padding: 0 2rem; }
@@ -457,7 +457,7 @@ const Admin = () => {
                 .admin-mini-btn.danger { background: var(--danger-bg); color: var(--danger); }
                 .admin-mini-btn.success { background: var(--success-bg); color: var(--success); }
 
-                .admin-search-input { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: white; padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; width: 200px; }
+                .admin-search-input { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: var(--text-primary); padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; width: 200px; }
                 .admin-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; }
                 .admin-badge.success { background: var(--success-bg); color: var(--success); }
                 .admin-badge.warning { background: rgba(249, 115, 22, 0.1); color: #F97316; }
@@ -467,7 +467,7 @@ const Admin = () => {
                 .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justifyContent: space-between; align-items: center; }
                 .modal-form { padding: 1.5rem; display: flex; flexDirection: column; gap: 1.25rem; }
                 .form-group label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
-                .form-group input, .form-group select { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: white; padding: 0.8rem; border-radius: 8px; }
+                .form-group input, .form-group select { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: var(--text-primary); padding: 0.8rem; border-radius: 8px; }
             `}</style>
         </div>
     );

@@ -79,8 +79,8 @@ const Deposit = () => {
         <div className="animate-fade-in" style={{ padding: '0 1rem 5rem 1rem' }}>
             {/* Header */}
             <header style={{ padding: '1rem 0', display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                 <Link to="/dashboard" style={{ color: 'white', marginRight: '1rem' }}><ChevronLeft /></Link>
-                 <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Secure Deposit</h1>
+                 <Link to="/dashboard" style={{ color: 'var(--text-primary)', marginRight: '1rem' }}><ChevronLeft /></Link>
+                 <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>Secure Deposit</h1>
             </header>
 
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
@@ -97,7 +97,7 @@ const Deposit = () => {
                             padding: '0.75rem 1.25rem', 
                             borderRadius: '10px',
                             background: selectedCoin?.id === w.id ? 'var(--primary)' : 'var(--bg-surface-light)',
-                            color: selectedCoin?.id === w.id ? 'black' : 'white',
+                            color: selectedCoin?.id === w.id ? 'black' : 'var(--text-primary)',
                             fontWeight: 700,
                             whiteSpace: 'nowrap',
                             border: 'none',

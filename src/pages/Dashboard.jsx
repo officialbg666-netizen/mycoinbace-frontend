@@ -69,8 +69,8 @@ const Dashboard = () => {
                     onClick={() => user && setShowProfile(true)} 
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
                 >
-                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <User size={22} color="#9ca3af" />
+                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--bg-surface-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <User size={22} color="var(--text-secondary)" />
                     </div>
                     {user ? (
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -94,25 +94,26 @@ const Dashboard = () => {
                 }} onClick={() => setShowProfile(false)}>
                     <div 
                         style={{ 
-                            width: '100%', background: 'white', borderRadius: '32px 32px 0 0', padding: '2.5rem 1.5rem', 
-                            display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 -10px 40px rgba(0,0,0,0.2)' 
+                            width: '100%', background: 'var(--bg-surface)', borderRadius: '32px 32px 0 0', padding: '2.5rem 1.5rem', 
+                            display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: 'var(--shadow-card)',
+                            borderTop: '1px solid var(--border-light)'
                         }} 
                         onClick={e => e.stopPropagation()}
                     >
                         <div style={{ textAlign: 'center' }}>
-                            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#EEF2FF', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <User size={36} color="#4F46E5" />
+                            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--bg-surface-light)', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <User size={36} color="var(--primary)" />
                             </div>
-                            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#111827' }}>{user.email}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#6B7280', fontWeight: 600, marginTop: '4px' }}>UID: {user.id}</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--text-primary)' }}>{user.email}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '4px' }}>UID: {user.id}</div>
                         </div>
 
-                        <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: '1.5rem' }}>
+                        <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1.5rem' }}>
                             <button 
                                 onClick={logout}
                                 style={{ 
-                                    width: '100%', padding: '1rem', background: '#FEE2E2', color: '#DC2626', 
-                                    border: 'none', borderRadius: '16px', fontWeight: 800, fontSize: '1rem', 
+                                    width: '100%', padding: '1rem', background: 'var(--danger-bg)', color: 'var(--danger)', 
+                                    border: '1px solid var(--danger)', borderRadius: '16px', fontWeight: 800, fontSize: '1rem', 
                                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' 
                                 }}
                             >
@@ -121,8 +122,8 @@ const Dashboard = () => {
                             <button 
                                 onClick={() => setShowProfile(false)}
                                 style={{ 
-                                    width: '100%', marginTop: '0.75rem', padding: '1rem', background: '#F3F4F6', 
-                                    color: '#4B5563', border: 'none', borderRadius: '16px', fontWeight: 700, 
+                                    width: '100%', marginTop: '0.75rem', padding: '1rem', background: 'var(--bg-surface-light)', 
+                                    color: 'var(--text-secondary)', border: 'none', borderRadius: '16px', fontWeight: 700, 
                                     fontSize: '0.95rem', cursor: 'pointer' 
                                 }}
                             >
@@ -135,7 +136,7 @@ const Dashboard = () => {
 
             {/* Banner Section */}
             <div style={{ padding: '0 1rem' }}>
-                <div className="hero-carousel" style={{ height: '180px', background: 'white', border: '1px solid #eee' }}>
+                <div className="hero-carousel" style={{ height: '180px', background: 'var(--bg-surface)', border: '1px solid var(--border-light)' }}>
                     {banners.map((b, i) => (
                         <div key={b.id} className={`carousel-slide ${currentBanner === i ? 'active' : ''}`} style={{ 
                             backgroundImage: `url('${b.img}')`,
@@ -170,7 +171,7 @@ const Dashboard = () => {
                     const data = prices[symbol] || { price: 0, change: 0 };
                     return (
                         <div key={symbol} style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.75rem', color: '#9ca3af', fontWeight: 700 }}>{symbol}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>{symbol}</div>
                             <div style={{ fontSize: '1rem', fontWeight: 800, color: data.change >= 0 ? 'var(--success)' : 'var(--danger)', margin: '4px 0' }}>
                                 {data.price.toFixed(2)}
                             </div>
@@ -203,8 +204,8 @@ const Dashboard = () => {
             </div>
 
             {/* Market Quotation List */}
-            <div style={{ background: 'white', padding: '0 1rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '0.5rem 0', fontSize: '0.75rem', color: '#9ca3af', fontWeight: 700 }}>
+            <div style={{ background: 'var(--bg-dark)', padding: '0 1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '0.5rem 0', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>
                     <span>Trading Pair</span>
                     <span style={{ textAlign: 'center' }}>Latest Price</span>
                     <span style={{ textAlign: 'right' }}>Change (%)</span>
@@ -245,7 +246,7 @@ const Dashboard = () => {
             </div>
 
             {/* Bottom Nav */}
-            <nav className="bottom-nav" style={{ background: '#f9fafb', borderTop: '1px solid #eee' }}>
+            <nav className="bottom-nav">
                 <Link to="/dashboard" className="nav-link active">
                     <Home size={22} />
                     <span>Home</span>
