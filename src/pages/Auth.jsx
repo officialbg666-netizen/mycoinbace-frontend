@@ -49,7 +49,7 @@ const Auth = () => {
             <div className="glass-panel" style={{ width: '100%', padding: '1.5rem' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <h2>{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
-                    <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
                         {isRegister ? 'Join MyCoinBace today' : 'Login to access your dashboard'}
                     </p>
                 </div>
@@ -70,7 +70,7 @@ const Auth = () => {
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>
                             Email Address
                         </label>
                         <input 
@@ -83,7 +83,7 @@ const Auth = () => {
                         />
                     </div>
                     <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500 }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>
                             Password
                         </label>
                         <input 
@@ -97,14 +97,14 @@ const Auth = () => {
                         />
                     </div>
 
-                    <button 
+                        <button 
                         type="submit" 
                         className="btn-primary" 
                         disabled={loading} 
                         style={{ 
                             marginTop: '1rem', width: '100%', 
-                            background: isRegister ? '#5d5fef' : 'var(--primary)',
-                            color: isRegister ? 'white' : 'black',
+                            background: isRegister ? 'var(--primary)' : 'var(--primary)',
+                            color: 'black',
                             border: 'none',
                             padding: '1.1rem',
                             fontWeight: 800,
@@ -119,7 +119,7 @@ const Auth = () => {
                     {isRegister ? (
                         <>Already have an account? <button type="button" onClick={() => setIsRegister(false)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer' }}>Sign in here</button></>
                     ) : (
-                        <>Don't have an account? <button type="button" onClick={() => setIsRegister(true)} style={{ background: 'none', border: 'none', color: '#5d5fef', fontWeight: 700, cursor: 'pointer' }}>Register here</button></>
+                        <>Don't have an account? <button type="button" onClick={() => setIsRegister(true)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer' }}>Register here</button></>
                     )}
                 </div>
             </div>

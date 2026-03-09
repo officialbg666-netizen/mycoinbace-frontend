@@ -14,45 +14,44 @@ const Navbar = () => {
 
   return (
     <nav style={{
-      padding: '1rem 2rem',
-      backgroundColor: 'rgba(15, 23, 42, 0.8)',
-      backdropFilter: 'blur(10px)',
-      borderBottom: '1px solid var(--border)',
+      padding: '0.75rem 1.5rem',
+      backgroundColor: 'var(--bg-surface)',
+      borderBottom: '1px solid var(--border-light)',
       position: 'sticky',
       top: 0,
       zIndex: 100,
     }} className="flex-between">
       
-      <Link to={user ? "/dashboard" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <Link to={user ? "/dashboard" : "/"} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'var(--text-primary)' }}>
         <div style={{
           width: '32px', height: '32px', 
-          background: 'var(--gradient-primary)', 
+          background: 'var(--primary)', 
           borderRadius: '8px', 
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 'bold', fontSize: '1.2rem', color: 'white'
+          fontWeight: 'bold', fontSize: '1.2rem', color: 'black'
         }}>
           M
         </div>
-        <span style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '1px' }}>MyCoinBace</span>
+        <span style={{ fontSize: '1.1rem', fontWeight: '800', letterSpacing: '0.5px' }}>MyCoinBace</span>
       </Link>
 
       <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {user ? (
           <>
             {user.role === 'admin' && (
-              <Link to="/admin" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', border: '1px solid #f0b90b', borderRadius: '4px', textDecoration: 'none', color: '#1e2329', fontWeight: 700 }}>
+              <Link to="/admin" style={{ padding: '0.4rem 0.8rem', fontSize: '0.75rem', border: '1px solid var(--primary)', borderRadius: '4px', textDecoration: 'none', color: 'var(--primary)', fontWeight: 700 }}>
                 Admin
               </Link>
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--bg-surface-light)', borderRadius: '20px' }}>
               <Wallet size={16} color="var(--primary)" />
-              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1e2329' }}>${Number(user.balance || 0).toFixed(2)}</span>
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>${Number(user.balance || 0).toFixed(2)}</span>
             </div>
           </>
         ) : (
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <Link to="/auth" style={{ textDecoration: 'none', color: '#1e2329', fontWeight: 700, fontSize: '0.85rem' }}>Log In</Link>
-            <Link to="/auth?mode=register" style={{ textDecoration: 'none', color: '#5d5fef', fontWeight: 800, fontSize: '0.85rem' }}>Register</Link>
+            <Link to="/auth" style={{ textDecoration: 'none', color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.85rem' }}>Log In</Link>
+            <Link to="/auth?mode=register" style={{ textDecoration: 'none', color: 'var(--primary)', fontWeight: 800, fontSize: '0.85rem' }}>Register</Link>
           </div>
         )}
       </div>

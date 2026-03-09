@@ -76,10 +76,10 @@ const Admin = () => {
     };
 
     if (loading) return (
-        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB' }}>
+        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
             <div style={{ textAlign: 'center' }}>
-                <Database size={40} color="#4F46E5" style={{ marginBottom: '1rem' }} />
-                <div style={{ fontWeight: 600, color: '#374151' }}>Loading Management Center...</div>
+                <Database size={40} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Loading Management Center...</div>
             </div>
         </div>
     );
@@ -123,13 +123,13 @@ const Admin = () => {
             {/* Recent Activities Placeholder */}
             <div className="admin-table-container">
                 <h3 className="admin-table-title">Recent System Notifications</h3>
-                <div style={{ padding: '1rem', color: '#6B7280' }}>
-                    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid #F3F4F6' }}>
-                        <div style={{ color: '#10B981' }}><UserCheck size={18} /></div>
-                        <div>User <strong>{users[0]?.email}</strong> has logged in.</div>
+                <div style={{ padding: '1rem', color: 'var(--text-secondary)' }}>
+                    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid var(--border-light)' }}>
+                        <div style={{ color: 'var(--success)' }}><UserCheck size={18} /></div>
+                        <div>User <strong style={{color: 'var(--text-primary)'}}>{users[0]?.email}</strong> has logged in.</div>
                     </div>
                     <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0' }}>
-                        <div style={{ color: '#F97316' }}><Bell size={18} /></div>
+                        <div style={{ color: 'var(--primary)' }}><Bell size={18} /></div>
                         <div>System maintenance scheduled for next Saturday.</div>
                     </div>
                 </div>
@@ -213,7 +213,7 @@ const Admin = () => {
             {/* Sidebar */}
             <aside className="admin-sidebar shadow-xl">
                 <div className="admin-logo-area">
-                    <Database size={28} color="#4F46E5" />
+                    <Database size={28} color="var(--primary)" />
                     <span>MyCoinBace <small style={{fontSize: '0.6rem', opacity: 0.6, display: 'block'}}>ADMIN DASHBOARD</small></span>
                 </div>
                 
@@ -252,17 +252,17 @@ const Admin = () => {
             {/* Main Center */}
             <main className="admin-main">
                 <header className="admin-top-bar">
-                    <div style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>Management / {activeTab}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Management / {activeTab}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <div style={{ background: '#F3F4F6', padding: '6px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>System: Online</div>
-                        <Edit size={18} style={{ color: '#9CA3AF', cursor: 'pointer' }} />
-                        <Bell size={18} style={{ color: '#9CA3AF', cursor: 'pointer' }} />
+                        <div style={{ background: 'var(--bg-surface-light)', color: 'var(--success)', padding: '6px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>System: Online</div>
+                        <Edit size={18} style={{ color: 'var(--text-secondary)', cursor: 'pointer' }} />
+                        <Bell size={18} style={{ color: 'var(--text-secondary)', cursor: 'pointer' }} />
                     </div>
                 </header>
 
                 <div className="admin-content-inner">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#111827' }}>{activeTab} Overview</h2>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>{activeTab} Overview</h2>
                         {activeTab === 'Users' && <button className="admin-btn-primary">+ Add New User</button>}
                     </div>
 
@@ -398,18 +398,17 @@ const Admin = () => {
                 .admin-layout {
                     height: 100vh;
                     display: flex;
-                    background: #F9FAFB;
-                    color: #111827;
+                    background: var(--bg-dark);
+                    color: var(--text-primary);
                     font-family: 'Inter', sans-serif;
                 }
-
-                /* Sidebar */
                 .admin-sidebar {
                     width: 280px;
                     background: #111827;
                     display: flex;
                     flex-direction: column;
                     color: white;
+                    border-right: 1px solid var(--border-light);
                 }
                 .admin-logo-area {
                     padding: 2rem;
@@ -420,94 +419,55 @@ const Admin = () => {
                     letter-spacing: 0.5px;
                     border-bottom: 1px solid rgba(255,255,255,0.05);
                 }
-                .admin-side-nav {
-                    flex: 1;
-                    padding: 1.5rem;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
-                }
+                .admin-side-nav { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 5px; }
                 .nav-item {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    padding: 0.8rem 1rem;
-                    border-radius: 8px;
-                    background: transparent;
-                    color: #9CA3AF;
-                    text-align: left;
-                    border: none;
-                    cursor: pointer;
-                    font-weight: 500;
-                    transition: all 0.2s;
+                    display: flex; align-items: center; gap: 12px; padding: 0.8rem 1rem; border-radius: 8px;
+                    background: transparent; color: #9CA3AF; border: none; cursor: pointer; font-weight: 500;
+                    transition: all 0.2s; text-align: left;
                 }
-                .nav-item:hover {
-                    color: white;
-                    background: rgba(255,255,255,0.05);
-                }
-                .nav-item.active {
-                    background: #4F46E5;
-                    color: white;
-                }
-                .admin-user-footer {
-                    padding: 1.5rem;
-                    border-top: 1px solid rgba(255,255,255,0.05);
-                }
-                .avatar {
-                    width: 32px; height: 32px; border-radius: 50%; background: #4F46E5; display: flex; align-items: center; justifyContent: center; font-weight: 800; font-size: 0.8rem;
-                }
-                .logout-btn {
-                    width: 100%; text-align: left; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #EF4444; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;
-                }
+                .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+                .nav-item.active { background: var(--primary); color: black; }
+                .admin-user-footer { padding: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+                .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: black; display: flex; align-items: center; justifyContent: center; font-weight: 800; font-size: 0.8rem; }
+                .logout-btn { width: 100%; text-align: left; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #EF4444; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
 
-                /* Main */
                 .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-                .admin-top-bar { height: 64px; background: white; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; px: 2rem; justifyContent: space-between; padding: 0 2rem; }
+                .admin-top-bar { height: 64px; background: var(--bg-surface); border-bottom: 1px solid var(--border-light); display: flex; align-items: center; px: 2rem; justifyContent: space-between; padding: 0 2rem; }
                 .admin-content-inner { flex: 1; overflow-y: auto; padding: 2rem; }
 
-                /* Stats Cards */
                 .admin-stat-card {
-                    background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #E5E7EB; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;
+                    background: var(--bg-surface); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); display: flex; align-items: center; gap: 1rem;
                 }
-                .admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-                .admin-stat-card .icon { border-radius: 12px; padding: 12px; }
-                .admin-stat-card .label { font-size: 0.8rem; color: #6B7280; fontWeight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-                .admin-stat-card .value { font-size: 1.5rem; font-weight: 800; color: #111827; }
+                .admin-stat-card .label { font-size: 0.75rem; color: var(--text-secondary); fontWeight: 700; text-transform: uppercase; }
+                .admin-stat-card .value { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); }
+                .icon { border-radius: 10px; width: 44px; height: 44px; display: flex; alignItems: center; justifyContent: center; }
 
-                /* Tables */
-                .admin-table-container { background: white; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
-                .admin-table-header { padding: 1.5rem; border-bottom: 1px solid #E5E7EB; display: flex; justifyContent: space-between; align-items: center; }
-                .admin-table-title { margin: 0; fontSize: 1rem; font-weight: 700; color: #111827; }
+                .admin-table-container { background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; }
+                .admin-table-header { padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justifyContent: space-between; align-items: center; }
+                .admin-table-title { color: var(--text-primary); margin: 0; font-size: 1rem; font-weight: 800; }
                 .admin-table { width: 100%; border-collapse: collapse; }
-                .admin-table th { background: #F9FAFB; padding: 1rem; text-align: left; font-size: 0.75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; }
-                .admin-table td { padding: 1.25rem 1rem; font-size: 0.85rem; border-bottom: 1px solid #F3F4F6; }
-                .admin-table tr:hover { background: #F9FAFB; }
+                .admin-table th { background: var(--bg-surface-light); padding: 1rem; text-align: left; font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--border-light); }
+                .admin-table td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--border-light); color: var(--text-primary); }
+                .admin-table tr:hover { background: var(--bg-surface-light); }
 
-                /* Buttons */
-                .admin-btn-primary { background: #4F46E5; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
-                .admin-btn-primary:hover { background: #4338CA; transform: scale(1.02); }
-                .admin-btn-secondary { background: white; border: 1px solid #E5E7EB; color: #374151; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-                .admin-mini-btn { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-                .admin-mini-btn.primary { background: #EEF2FF; color: #4F46E5; }
-                .admin-mini-btn.danger { background: #FEF2F2; color: #EF4444; }
-                .admin-mini-btn.success { background: #ECFDF5; color: #10B981; }
+                .admin-btn-primary { background: var(--primary); color: black; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 800; cursor: pointer; }
+                .admin-btn-secondary { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: var(--text-primary); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+                .admin-mini-btn { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; cursor: pointer; }
+                .admin-mini-btn.primary { background: var(--primary); color: black; }
+                .admin-mini-btn.danger { background: var(--danger-bg); color: var(--danger); }
+                .admin-mini-btn.success { background: var(--success-bg); color: var(--success); }
 
-                .admin-search-input { border: 1px solid #E5E7EB; padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; font-size: 0.85rem; width: 220px; }
-                .admin-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-                .admin-badge.success { background: #ECFDF5; color: #10B981; }
-                .admin-badge.warning { background: #FFF7ED; color: #F97316; }
-                .admin-badge.danger { background: #FEF2F2; color: #EF4444; }
+                .admin-search-input { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: white; padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; width: 200px; }
+                .admin-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; }
+                .admin-badge.success { background: var(--success-bg); color: var(--success); }
+                .admin-badge.warning { background: rgba(249, 115, 22, 0.1); color: #F97316; }
 
-                /* Modal */
-                .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justifyContent: center; z-index: 1000; }
-                .modal-content { background: white; width: 440px; border-radius: 16px; overflow: hidden; }
-                .modal-header { padding: 1.5rem; border-bottom: 1px solid #F3F4F6; display: flex; justifyContent: space-between; align-items: center; }
-                .close-btn { color: #9CA3AF; cursor: pointer; }
-                .modal-form { padding: 1.5rem; display: flex; flexDirection: column; gap: 1rem; }
-                .form-group { display: flex; flexDirection: column; gap: 6px; }
-                .form-group label { font-size: 0.75rem; fontWeight: 700; color: #6B7280; text-transform: uppercase; }
-                .form-group input, .form-group select { border: 1px solid #E5E7EB; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; width: 100%; }
-                .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+                .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justifyContent: center; z-index: 1000; }
+                .modal-content { background: var(--bg-surface); width: 440px; border-radius: 16px; border: 1px solid var(--border-light); }
+                .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border-light); display: flex; justifyContent: space-between; align-items: center; }
+                .modal-form { padding: 1.5rem; display: flex; flexDirection: column; gap: 1.25rem; }
+                .form-group label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; }
+                .form-group input, .form-group select { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: white; padding: 0.8rem; border-radius: 8px; }
             `}</style>
         </div>
     );

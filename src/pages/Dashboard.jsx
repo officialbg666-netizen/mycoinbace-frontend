@@ -64,7 +64,7 @@ const Dashboard = () => {
     return (
         <div className="animate-fade-in" style={{ background: 'var(--bg-dark)', minHeight: '100vh', paddingBottom: '80px' }}>
             {/* Header: User Profile Area */}
-            <header style={{ padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface)', borderBottom: '1px solid #f3f4f6' }}>
+            <header style={{ padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-light)' }}>
                 <div 
                     onClick={() => user && setShowProfile(true)} 
                     style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
@@ -74,15 +74,15 @@ const Dashboard = () => {
                     </div>
                     {user ? (
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1e2329' }}>{user.email.split('@')[0]}</span>
-                            <span style={{ fontSize: '0.65rem', color: '#9ca3af', fontWeight: 600 }}>UID: {user.id.substring(0,8)}</span>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>{user.email.split('@')[0]}</span>
+                            <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 600 }}>UID: {user.id.substring(0,8)}</span>
                         </div>
                     ) : (
-                        <Link to="/auth" style={{ textDecoration: 'none', color: '#1e2329', fontSize: '0.9rem', fontWeight: 700 }}>Login / Register</Link>
+                        <Link to="/auth" style={{ textDecoration: 'none', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 700 }}>Login / Register</Link>
                     )}
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <div style={{ border: '1px solid #e5e7eb', borderRadius: '4px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 800, color: '#6b7280' }}>EN</div>
+                    <div style={{ border: '1px solid var(--border-light)', borderRadius: '4px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)' }}>EN</div>
                 </div>
             </header>
 
@@ -154,10 +154,10 @@ const Dashboard = () => {
             </div>
 
             {/* News Ticker */}
-            <div style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--bg-dark)', color: '#4b5563', fontSize: '0.85rem' }}>
+            <div style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--bg-dark)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                 <Megaphone size={16} />
                 <div className="ticker-container" style={{ background: 'transparent', border: 'none', padding: 0, flex: 1 }}>
-                    <div className="ticker-content" style={{ animationDuration: '40s' }}>
+                    <div className="ticker-content" style={{ animationDuration: '40s', color: 'var(--text-primary)' }}>
                         MyCoinBace: World Leading Secure Trading Hub - New Zero Fee Trading Enabled! - ETH 2.0 Staking Now Live.
                     </div>
                 </div>
@@ -184,21 +184,21 @@ const Dashboard = () => {
 
             {/* Action Grid (Large Icons) */}
             <div style={{ 
-                margin: '1rem', padding: '1.5rem', background: 'white', borderRadius: '24px 24px 0 0',
+                margin: '1rem', padding: '1.5rem', background: 'var(--bg-surface)', borderRadius: '24px 24px 0 0',
                 display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', textAlign: 'center',
-                boxShadow: '0 -10px 30px rgba(0,0,0,0.03)', border: '1px solid #f3f4f6'
+                boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', border: '1px solid var(--border-light)'
             }}>
                 <Link to="/deposit" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}><Rocket size={32} /></div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4b5563' }}>Deposit</span>
+                    <div style={{ width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}><Rocket size={32} /></div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Deposit</span>
                 </Link>
                 <Link to="/withdraw" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0ea5e9' }}><Briefcase size={32} /></div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4b5563' }}>Withdraw</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Withdraw</span>
                 </Link>
                 <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}><Headphones size={32} /></div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4b5563' }}>Customer</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Customer</span>
                 </Link>
             </div>
 
@@ -216,7 +216,7 @@ const Dashboard = () => {
                     return (
                         <Link key={coin.symbol} to="/trade" className="market-card" style={{ 
                             display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', alignItems: 'center', 
-                            padding: '1.2rem 0', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid #f3f4f6'
+                            padding: '1.2rem 0', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid var(--border-light)'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <img 
@@ -225,15 +225,15 @@ const Dashboard = () => {
                                     alt={coin.icon} 
                                     style={{ width: '28px', height: '28px' }} 
                                 />
-                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{coin.symbol}</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>{coin.symbol}</div>
                             </div>
-                            <div style={{ textAlign: 'center', fontSize: '0.95rem', fontWeight: 700, color: '#1e2329' }}>
+                            <div style={{ textAlign: 'center', fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                                 {data.price.toFixed(coin.icon === 'DOGE' ? 4 : 2)}
                             </div>
                             <div style={{ textAlign: 'right' }}>
                                 <div style={{ 
                                     display: 'inline-block', padding: '6px 12px', borderRadius: '4px', 
-                                    background: isUp ? 'var(--success)' : '#e5e7eb', color: isUp ? 'white' : '#707a8a',
+                                    background: isUp ? 'var(--success)' : 'var(--bg-surface-light)', color: isUp ? 'black' : 'var(--text-secondary)',
                                     fontSize: '0.85rem', fontWeight: 800, minWidth: '80px', textAlign: 'center'
                                 }}>
                                     {isUp ? '+' : ''}{data.change.toFixed(2)}%

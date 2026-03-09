@@ -51,7 +51,7 @@ const Landing = () => {
                             <Link to="/auth" style={{ flex: 1, padding: '1.1rem', background: 'var(--primary)', color: 'black', borderRadius: '8px', fontWeight: 700, textAlign: 'center', textDecoration: 'none' }}>
                                 Sign In
                             </Link>
-                            <Link to="/auth?mode=register" style={{ flex: 1, padding: '1.1rem', background: '#5d5fef', borderRadius: '8px', fontWeight: 700, textAlign: 'center', textDecoration: 'none', color: 'white' }}>
+                            <Link to="/auth?mode=register" style={{ flex: 1, padding: '1.1rem', background: 'var(--bg-surface-light)', borderRadius: '8px', fontWeight: 700, textAlign: 'center', textDecoration: 'none', color: 'white', border: '1px solid var(--border-light)' }}>
                                 Register
                             </Link>
                         </>
