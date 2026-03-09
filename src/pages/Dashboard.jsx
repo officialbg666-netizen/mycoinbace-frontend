@@ -4,14 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { 
     Home, TrendingUp, Activity, Wallet, User, 
     Headphones, ChevronRight, Megaphone, List,
-    ArrowUpCircle, ArrowDownCircle, Briefcase, Rocket
+    ArrowUpCircle, ArrowDownCircle, Briefcase, Rocket,
+    LogOut
 } from 'lucide-react';
 
 const Dashboard = () => {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [prices, setPrices] = useState({});
     const [prevPrices, setPrevPrices] = useState({});
     const [currentBanner, setCurrentBanner] = useState(0);
+    const [showProfile, setShowProfile] = useState(false);
 
     const banners = [
         { id: 1, img: '/banner_welcome.png', title: 'WELCOME BONUS', subtitle: 'FOR NEW USERS' },
@@ -63,8 +65,11 @@ const Dashboard = () => {
         <div className="animate-fade-in" style={{ background: 'var(--bg-dark)', minHeight: '100vh', paddingBottom: '80px' }}>
             {/* Header: User Profile Area */}
             <header style={{ padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface)', borderBottom: '1px solid #f3f4f6' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div 
+                    onClick={() => user && setShowProfile(true)} 
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+                >
+                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <User size={22} color="#9ca3af" />
                     </div>
                     {user ? (
@@ -80,6 +85,53 @@ const Dashboard = () => {
                     <div style={{ border: '1px solid #e5e7eb', borderRadius: '4px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 800, color: '#6b7280' }}>EN</div>
                 </div>
             </header>
+
+            {/* Profile Modal Overlay */}
+            {showProfile && user && (
+                <div style={{ 
+                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', 
+                    zIndex: 1000, display: 'flex', alignItems: 'flex-end', transition: '0.3s' 
+                }} onClick={() => setShowProfile(false)}>
+                    <div 
+                        style={{ 
+                            width: '100%', background: 'white', borderRadius: '32px 32px 0 0', padding: '2.5rem 1.5rem', 
+                            display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 -10px 40px rgba(0,0,0,0.2)' 
+                        }} 
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#EEF2FF', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <User size={36} color="#4F46E5" />
+                            </div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#111827' }}>{user.email}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#6B7280', fontWeight: 600, marginTop: '4px' }}>UID: {user.id}</div>
+                        </div>
+
+                        <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: '1.5rem' }}>
+                            <button 
+                                onClick={logout}
+                                style={{ 
+                                    width: '100%', padding: '1rem', background: '#FEE2E2', color: '#DC2626', 
+                                    border: 'none', borderRadius: '16px', fontWeight: 800, fontSize: '1rem', 
+                                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' 
+                                }}
+                            >
+                                <LogOut size={22} /> Logout Account
+                            </button>
+                            <button 
+                                onClick={() => setShowProfile(false)}
+                                style={{ 
+                                    width: '100%', marginTop: '0.75rem', padding: '1rem', background: '#F3F4F6', 
+                                    color: '#4B5563', border: 'none', borderRadius: '16px', fontWeight: 700, 
+                                    fontSize: '0.95rem', cursor: 'pointer' 
+                                }}
+                            >
+                                Wait, Go Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Banner Section */}
             <div style={{ padding: '0 1rem' }}>
