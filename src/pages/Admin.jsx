@@ -324,26 +324,24 @@ const Admin = () => {
                                                 </td>
                                                 <td>{new Date(d.created_at).toLocaleDateString()}</td>
                                                 <td style={{ textAlign: 'right' }}>
-                                                    {d.status === 'pending' ? (
-                                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                                            <button 
-                                                                onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'success' })} 
-                                                                className="admin-mini-btn success"
-                                                                style={{ padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}
-                                                            >
-                                                                Approve
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} 
-                                                                className="admin-mini-btn danger"
-                                                                style={{ padding: '8px 16px', borderRadius: '8px', cursor: 'pointer' }}
-                                                            >
-                                                                Reject
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>Processed</span>
-                                                    )}
+                                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                                        <button 
+                                                            disabled={d.status !== 'pending'}
+                                                            onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'success' })} 
+                                                            className={`admin-mini-btn ${d.status === 'pending' ? 'success-vibrant' : d.status === 'success' ? 'processed-active' : 'processed-muted'}`}
+                                                            style={{ padding: '8px 16px', borderRadius: '8px', cursor: d.status === 'pending' ? 'pointer' : 'default' }}
+                                                        >
+                                                            {d.status === 'success' ? 'Accepted' : 'Approve'}
+                                                        </button>
+                                                        <button 
+                                                            disabled={d.status !== 'pending'}
+                                                            onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} 
+                                                            className={`admin-mini-btn ${d.status === 'pending' ? 'danger-vibrant' : d.status === 'rejected' ? 'danger-processed' : 'processed-muted'}`}
+                                                            style={{ padding: '8px 16px', borderRadius: '8px', cursor: d.status === 'pending' ? 'pointer' : 'default' }}
+                                                        >
+                                                            {d.status === 'rejected' ? 'Rejected' : 'Reject'}
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -529,6 +527,11 @@ const Admin = () => {
                 .admin-mini-btn.primary { background: var(--primary); color: black; }
                 .admin-mini-btn.danger { background: var(--danger-bg); color: var(--danger); }
                 .admin-mini-btn.success { background: var(--success-bg); color: var(--success); }
+                .admin-mini-btn.success-vibrant { background: #10B981; color: white; }
+                .admin-mini-btn.danger-vibrant { background: #EF4444; color: white; }
+                .admin-mini-btn.processed-active { background: transparent; border: 1px solid var(--success); color: var(--success); opacity: 0.6; }
+                .admin-mini-btn.danger-processed { background: transparent; border: 1px solid var(--danger); color: var(--danger); opacity: 0.6; }
+                .admin-mini-btn.processed-muted { background: transparent; border: 1px solid var(--border-light); color: var(--text-secondary); opacity: 0.3; }
 
                 .admin-search-input { background: var(--bg-surface-light); border: 1px solid var(--border-light); color: var(--text-primary); padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; width: 200px; }
                 .admin-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; }
