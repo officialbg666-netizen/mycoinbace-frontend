@@ -57,109 +57,127 @@ const Deposit = () => {
             });
 
             if (res.ok) {
-                setMessage({ type: 'success', text: 'Deposit request submitted successfully. Waiting for admin approval.' });
+                setMessage({ type: 'success', text: 'Deposit request submitted. Please wait for system confirmation.' });
                 setAmount('');
             } else {
                 const err = await res.json();
-                setMessage({ type: 'error', text: err.error || 'Deposit failed' });
+                setMessage({ type: 'error', text: err.error || 'Sync Error: Please log out and back in.' });
             }
         } catch (error) {
-            setMessage({ type: 'error', text: error.message });
+            setMessage({ type: 'error', text: 'Connection Error. Please check your internet.' });
         } finally {
             setSubmitting(false);
         }
     };
 
-    if (loading) return <div className="flex-center">Loading options...</div>;
+    if (loading) return <div className="flex-center" style={{ height: '80vh' }}>Initializing Safe Payment...</div>;
 
     return (
-        <div className="animate-fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <h1 style={{ marginBottom: '1rem' }}>Crypto Deposits</h1>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-                Select a coin and send funds to the address below. Your balance will be credited after confirmation.
+        <div className="animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '5rem' }}>
+            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', textAlign: 'center' }}>Secure Deposit</h1>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
+                Select your preferred cryptocurrency and send the exact amount.
             </p>
 
-            <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
-                {/* Coin Selection List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {wallets.map(w => (
-                        <button 
-                            key={w.id}
-                            onClick={() => setSelectedCoin(w)}
-                            className="glass-panel"
-                            style={{ 
-                                padding: '1rem', 
-                                textAlign: 'left',
-                                border: selectedCoin?.id === w.id ? '1px solid var(--primary)' : '1px solid var(--border)',
-                                background: selectedCoin?.id === w.id ? 'rgba(59, 130, 246, 0.1)' : 'var(--bg-card)',
-                                fontWeight: 600,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            {getCoinLabel(w.coin)}
-                        </button>
-                    ))}
-                </div>
+            {/* Coin Picker */}
+            <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+                {wallets.map(w => (
+                    <button 
+                        key={w.id}
+                        onClick={() => setSelectedCoin(w)}
+                        style={{ 
+                            padding: '0.75rem 1.25rem', 
+                            borderRadius: '10px',
+                            background: selectedCoin?.id === w.id ? 'var(--primary)' : 'var(--bg-surface-light)',
+                            color: selectedCoin?.id === w.id ? 'black' : 'white',
+                            fontWeight: 700,
+                            whiteSpace: 'nowrap',
+                            border: 'none',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        {w.coin}
+                    </button>
+                ))}
+            </div>
 
-                {/* Deposit Details Form */}
-                {selectedCoin && (
-                    <div className="glass-panel" style={{ padding: '2rem' }}>
-                        <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
-                            Deposit {getCoinLabel(selectedCoin.coin)}
-                        </h3>
-                        
-                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            {selectedCoin && (
+                <div className="glass-panel" style={{ padding: '2rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                        <div style={{ 
+                            background: 'white', 
+                            display: 'inline-block', 
+                            padding: '16px', 
+                            borderRadius: '16px',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                            marginBottom: '1.5rem'
+                        }}>
                             <img 
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${selectedCoin.address}&bgcolor=ffffff&color=000000`} 
-                                alt={`${getCoinLabel(selectedCoin.coin)} QR Code`}
-                                style={{ borderRadius: '8px', padding: '10px', background: 'white', marginBottom: '1rem' }}
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${selectedCoin.address}&bgcolor=ffffff&color=000000`} 
+                                alt="QR Code"
+                                style={{ display: 'block' }}
                             />
-                            <div>
-                                <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Deposit Address</span>
-                                <div style={{ 
-                                    background: 'rgba(0,0,0,0.3)', padding: '0.75rem', 
-                                    borderRadius: '4px', fontFamily: 'monospace', fontSize: '1rem',
-                                    marginTop: '0.5rem', wordBreak: 'break-all', userSelect: 'all'
-                                }}>
+                        </div>
+                        
+                        <div style={{ textAlign: 'left' }}>
+                            <label style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600 }}>
+                                Official {selectedCoin.coin} Wallet Address
+                            </label>
+                            <div style={{ 
+                                background: 'rgba(255,255,255,0.03)', 
+                                padding: '1rem', 
+                                borderRadius: '12px', 
+                                border: '1px solid var(--border-light)',
+                                marginTop: '0.5rem', 
+                                position: 'relative',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-all', display: 'block', marginRight: '1rem', fontSize: '0.95rem' }}>
                                     {selectedCoin.address}
-                                </div>
+                                </span>
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--primary)', marginTop: '0.5rem', fontWeight: 600 }}>
+                                * Only send {selectedCoin.coin} to this address.
                             </div>
                         </div>
-
-                        {message && (
-                            <div style={{ 
-                                padding: '1rem', marginBottom: '1.5rem', borderRadius: '4px',
-                                background: message.type === 'success' ? 'var(--success-glow)' : 'var(--danger-glow)',
-                                color: message.type === 'success' ? 'var(--success)' : 'var(--danger)',
-                                border: `1px solid ${message.type === 'success' ? 'var(--success)' : 'var(--danger)'}`
-                            }}>
-                                {message.text}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleDeposit}>
-                            <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-                                    Amount Sent ({getCoinLabel(selectedCoin.coin)})
-                                </label>
-                                <input 
-                                    type="number" 
-                                    step="any"
-                                    min="0"
-                                    required
-                                    className="input-base"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    placeholder="Enter amount..."
-                                />
-                            </div>
-                            <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={submitting}>
-                                {submitting ? 'Submitting...' : 'I have made the deposit'}
-                            </button>
-                        </form>
                     </div>
-                )}
-            </div>
+
+                    {message && (
+                        <div style={{ 
+                            padding: '1rem', marginBottom: '1.5rem', borderRadius: '10px',
+                            background: message.type === 'success' ? 'var(--success-bg)' : 'var(--danger-bg)',
+                            color: message.type === 'success' ? 'var(--success)' : 'var(--danger)',
+                            border: `1px solid ${message.type === 'success' ? 'var(--success)' : 'var(--danger)'}`,
+                            fontSize: '0.9rem',
+                            fontWeight: 500
+                        }}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleDeposit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.75rem', fontSize: '0.85rem', fontWeight: 600 }}>
+                                Amount to Deposit ({selectedCoin.coin})
+                            </label>
+                            <input 
+                                type="number" 
+                                step="any"
+                                required
+                                className="input-base"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="0.00"
+                                style={{ fontSize: '1.1rem', fontWeight: 700 }}
+                            />
+                        </div>
+                        <button type="submit" className="btn-primary" style={{ padding: '1.1rem', fontSize: '1.1rem' }} disabled={submitting}>
+                            {submitting ? 'Authenticating...' : 'I have made the deposit'}
+                        </button>
+                    </form>
+                </div>
+            )}
         </div>
     );
 };

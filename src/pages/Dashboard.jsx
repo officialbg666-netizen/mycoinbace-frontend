@@ -1,117 +1,174 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, ArrowDownRight, ArrowUpRight, Activity } from 'lucide-react';
-
-const FAKE_PAIRS = [
-    { pair: 'BTC/USDT', price: '64,230.50', change: '+2.4%' },
-    { pair: 'ETH/USDT', price: '3,450.20', change: '+1.8%' },
-    { pair: 'SOL/USDT', price: '145.80', change: '-0.5%' },
-    { pair: 'BNB/USDT', price: '590.10', change: '+0.2%' },
-    { pair: 'XRP/USDT', price: '0.62', change: '+5.1%' },
-    { pair: 'ADA/USDT', price: '0.45', change: '-1.2%' },
-    { pair: 'DOGE/USDT', price: '0.15', change: '+8.4%' },
-];
+import { Home, LineChart, FileText, Wallet, User, Headphones, ChevronRight } from 'lucide-react';
 
 const Dashboard = () => {
     const { user } = useAuth();
+    const [prices, setPrices] = useState({});
+
+    // Fetch real prices from Binance for a rich look
+    useEffect(() => {
+        const fetchPrices = async () => {
+            try {
+                // Fetch top pairs
+                const symbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "LTCUSDT", "XRPUSDT", "ADAUSDT", "DOGEUSDT", "TRXUSDT"];
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${JSON.stringify(symbols)}`);
+                const data = await res.json();
+                const priceMap = {};
+                data.forEach(item => {
+                    priceMap[item.symbol] = {
+                        price: parseFloat(item.lastPrice).toFixed(parseFloat(item.lastPrice) < 1 ? 4 : 2),
+                        change: parseFloat(item.priceChangePercent).toFixed(2)
+                    };
+                });
+                setPrices(priceMap);
+            } catch (err) {
+                console.error('Price fetch error:', err);
+            }
+        };
+
+        fetchPrices();
+        const interval = setInterval(fetchPrices, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const marketList = [
+        { name: 'Bitcoin', symbol: 'BTC', pair: 'BTCUSDT', icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png' },
+        { name: 'Ethereum', symbol: 'ETH', pair: 'ETHUSDT', icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
+        { name: 'Binance Coin', symbol: 'BNB', pair: 'BNBUSDT', icon: 'https://cryptologos.cc/logos/bnb-bnb-logo.png' },
+        { name: 'Dogecoin', symbol: 'DOGE', pair: 'DOGEUSDT', icon: 'https://cryptologos.cc/logos/dogecoin-doge-logo.png' },
+        { name: 'Litecoin', symbol: 'LTC', pair: 'LTCUSDT', icon: 'https://cryptologos.cc/logos/litecoin-ltc-logo.png' },
+        { name: 'Ripple', symbol: 'XRP', pair: 'XRPUSDT', icon: 'https://cryptologos.cc/logos/xrp-xrp-logo.png' },
+        { name: 'Cardano', symbol: 'ADA', pair: 'ADAUSDT', icon: 'https://cryptologos.cc/logos/cardano-ada-logo.png' },
+        { name: 'TRON', symbol: 'TRX', pair: 'TRXUSDT', icon: 'https://cryptologos.cc/logos/tron-trx-logo.png' },
+    ];
 
     return (
-        <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <h1 style={{ marginBottom: '2rem' }}>Dashboard</h1>
+        <div className="animate-fade-in" style={{ paddingBottom: '90px', background: 'var(--bg-dark)', minHeight: '100vh' }}>
+            {/* Top User Header */}
+            <header style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--bg-surface-light)', display: 'flex', alignItems: 'center', justifyItems: 'center', border: '1px solid var(--border-light)' }}>
+                        <User size={20} style={{ margin: 'auto' }} />
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.email?.split('@')[0]}</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>UID: {user?.id?.substring(0,8)}</div>
+                    </div>
+                </div>
+                <div style={{ background: 'var(--bg-surface-light)', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>EN</div>
+            </header>
 
-            {/* Scrolling Ticker on Dashboard */}
-            <div style={{ margin: '0 0 3rem 0', overflow: 'hidden', padding: '1rem 0', position: 'relative' }}>
-                <div style={{
-                     position: 'absolute', top: 0, bottom: 0, left: 0, width: '50px',
-                     background: 'linear-gradient(to right, var(--bg-darker), transparent)', zIndex: 1
+            {/* Rotating Hero Banner */}
+            <div style={{ padding: '0 1rem' }}>
+                <div className="hero-banner" style={{ 
+                    backgroundImage: `url('/trading_banner_1_1773040656336.png')`,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                    border: '1px solid var(--border-light)'
                 }}></div>
-                <div style={{
-                     position: 'absolute', top: 0, bottom: 0, right: 0, width: '50px',
-                     background: 'linear-gradient(to left, var(--bg-darker), transparent)', zIndex: 1
-                }}></div>
-                
-                <div style={{ display: 'flex', gap: '1.5rem', animation: 'scroll 20s linear infinite', width: 'max-content' }}>
-                    {[...FAKE_PAIRS, ...FAKE_PAIRS, ...FAKE_PAIRS].map((coin, i) => (
-                        <div key={i} className="glass-panel" style={{ padding: '0.75rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', minWidth: '150px' }}>
-                            <div className="flex-between">
-                                <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{coin.pair}</span>
-                                <span style={{ 
-                                    color: coin.change.startsWith('+') ? 'var(--success)' : 'var(--danger)',
-                                    fontWeight: 600, fontSize: '0.875rem',
-                                    background: coin.change.startsWith('+') ? 'var(--success-glow)' : 'var(--danger-glow)',
-                                    padding: '0.2rem 0.5rem', borderRadius: '4px'
-                                }}>
-                                    {coin.change}
-                                </span>
-                            </div>
-                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>${coin.price}</div>
+            </div>
+
+            {/* Top 3 Ticker Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', padding: '0 1rem', marginTop: '1rem' }}>
+                {['BTCUSDT', 'ETHUSDT', 'BNBUSDT'].map(pair => (
+                    <div key={pair} className="glass-panel" style={{ padding: '0.75rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>{pair.replace('USDT', '')}/USDT</div>
+                        <div style={{ fontWeight: 800, fontSize: '1rem', color: prices[pair]?.change >= 0 ? 'var(--success)' : 'var(--danger)' }}>
+                            {prices[pair]?.price || '--'}
                         </div>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: prices[pair]?.change >= 0 ? 'var(--success)' : 'var(--danger)' }}>
+                            {prices[pair]?.change >= 0 ? '+' : ''}{prices[pair]?.change || '0.00'}%
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Quick Action Grid */}
+            <div className="action-grid" style={{ padding: '0 1rem', marginTop: '1.5rem' }}>
+                <Link to="/deposit" className="action-card">
+                    <div className="icon-box" style={{ background: 'rgba(240, 185, 11, 0.1)' }}>
+                        <Wallet size={24} color="var(--primary)" />
+                    </div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Deposit</span>
+                </Link>
+                <Link to="/withdraw" className="action-card">
+                    <div className="icon-box" style={{ background: 'rgba(14, 203, 129, 0.1)' }}>
+                        <FileText size={24} color="var(--success)" />
+                    </div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Withdraw</span>
+                </Link>
+                <Link to="/trading" className="action-card">
+                    <div className="icon-box" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+                        <Headphones size={24} color="#3b82f6" />
+                    </div>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>Customer</span>
+                </Link>
+            </div>
+
+            {/* Market Quotation List */}
+            <div style={{ marginTop: '2rem', background: 'var(--bg-surface)', padding: '1.5rem 0', borderRadius: '24px 24px 0 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 1.25rem 1rem 1.25rem', borderBottom: '1px solid var(--border-light)' }}>
+                    <h3 style={{ fontSize: '1.1rem' }}>Market Quotes</h3>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--primary)', display: 'flex', alignItems: 'center' }}>
+                        View More <ChevronRight size={14} />
+                    </div>
+                </div>
+
+                <div style={{ padding: '0 1rem' }}>
+                    <div className="flex-between" style={{ padding: '1rem 0', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        <span style={{ flex: 1.5 }}>Trading Pair</span>
+                        <span style={{ flex: 1, textAlign: 'right' }}>Latest Price</span>
+                        <span style={{ flex: 1, textAlign: 'right' }}>Change (%)</span>
+                    </div>
+
+                    {marketList.map(coin => (
+                        <Link key={coin.symbol} to="/trading" className="market-item" style={{ padding: '1.25rem 0', textDecoration: 'none', color: 'inherit' }}>
+                            <div className="coin-info" style={{ flex: 1.5 }}>
+                                <img src={coin.icon} alt={coin.name} className="coin-icon" style={{ width: '28px', height: '28px' }} />
+                                <div>
+                                    <div className="coin-name" style={{ fontSize: '1rem' }}>{coin.symbol}<span style={{fontSize: '0.7rem', color: 'var(--text-secondary)'}}>/USDT</span></div>
+                                </div>
+                            </div>
+                            <div className="coin-price" style={{ flex: 1, textAlign: 'right', fontSize: '1rem', fontWeight: 700 }}>
+                                {prices[coin.pair]?.price || '--'}
+                            </div>
+                            <div style={{ flex: 1, textAlign: 'right' }}>
+                                <div className="coin-change" style={{ 
+                                    background: prices[coin.pair]?.change >= 0 ? 'var(--success)' : 'var(--danger)',
+                                    color: 'white',
+                                    fontSize: '0.85rem',
+                                    display: 'inline-block',
+                                    borderRadius: '4px',
+                                    width: '75px'
+                                }}>
+                                    {prices[coin.pair]?.change >= 0 ? '+' : ''}{prices[coin.pair]?.change || '0.00'}%
+                                </div>
+                            </div>
+                        </Link>
                     ))}
                 </div>
-                <style>{`
-                    @keyframes scroll {
-                        0% { transform: translateX(0); }
-                        100% { transform: translateX(-33.33%); }
-                    }
-                `}</style>
             </div>
 
-            {/* Balance Overview */}
-            <div className="glass-panel" style={{ padding: '3rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
-                <div style={{
-                     position: 'absolute', top: '-50%', left: '-10%', width: '300px', height: '300px',
-                     background: 'var(--primary)', filter: 'blur(100px)', opacity: 0.2, borderRadius: '50%'
-                }}/>
-                <span style={{ color: 'var(--text-muted)', fontSize: '1.125rem', marginBottom: '0.5rem', fontWeight: 500 }}>Total Balance</span>
-                <h2 style={{ fontSize: '4rem', fontWeight: 700, margin: '0 0 2rem 0', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
-                    ${Number(user?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </h2>
-
-                <div className="dashboard-actions" style={{ display: 'flex', gap: '1rem' }}>
-                    <Link to="/deposit" className="btn-primary" style={{ padding: '1rem 2rem' }}>
-                        <ArrowDownRight size={20} /> Deposit
-                    </Link>
-                    <Link to="/withdraw" className="btn-outline" style={{ padding: '1rem 2rem' }}>
-                        <ArrowUpRight size={20} /> Withdraw
-                    </Link>
-                    <Link to="/trade" className="btn-primary" style={{ padding: '1rem 2rem', background: 'var(--success)' }}>
-                        <Activity size={20} /> Trade Now
-                    </Link>
-                </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                 {/* Quick Info */}
-                 <div className="glass-panel" style={{ padding: '2rem' }}>
-                     <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                         <Wallet size={20} color="var(--primary)" /> Account Details
-                     </h3>
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                         <div className="flex-between">
-                             <span style={{ color: 'var(--text-muted)' }}>Email</span>
-                             <span style={{ fontWeight: 500 }}>{user?.email}</span>
-                         </div>
-                         <div className="flex-between">
-                             <span style={{ color: 'var(--text-muted)' }}>Account ID</span>
-                             <span style={{ fontWeight: 500, fontFamily: 'monospace', fontSize: '0.875rem' }}>
-                                 {user?.id?.substring(0, 12)}...
-                             </span>
-                         </div>
-                         <div className="flex-between">
-                             <span style={{ color: 'var(--text-muted)' }}>Status</span>
-                             <span style={{ color: 'var(--success)', fontWeight: 600, background: 'var(--success-glow)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>VERIFIED</span>
-                         </div>
-                     </div>
-                 </div>
-
-                 <div className="glass-panel" style={{ padding: '2rem' }}>
-                     <h3 style={{ marginBottom: '1.5rem' }}>Recent Activity</h3>
-                     <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>
-                         No recent activity. Make a deposit or start trading!
-                     </div>
-                 </div>
-            </div>
+            {/* Fixed Bottom Navigation */}
+            <nav className="bottom-nav">
+                <Link to="/dashboard" className="nav-link active">
+                    <Home size={22} />
+                    <span>Home</span>
+                </Link>
+                <Link to="/trading" className="nav-link">
+                    <LineChart size={22} />
+                    <span>Market</span>
+                </Link>
+                <Link to="/trading" className="nav-link">
+                    <Activity size={22} />
+                    <span>Contract</span>
+                </Link>
+                <Link to="/dashboard" className="nav-link">
+                    <Wallet size={22} />
+                    <span>Assets</span>
+                </Link>
+            </nav>
         </div>
     );
 };
