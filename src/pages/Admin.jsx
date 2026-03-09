@@ -1,43 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { 
-    Users, Settings, DollarSign, BarChart2, FileText, 
-    Shield, UserPlus, Lock, Unlock, CheckCircle, 
-    XCircle, Trash2, Bell, Headset, MoreVertical,
-    ChevronDown, LayoutDashboard, Database
+    Users, LayoutDashboard, DollarSign, BarChart2, 
+    Settings, LogOut, Search, Filter, Edit, 
+    Trash2, UserSlash, UserCheck, Shield, 
+    Database, CreditCard, Bell, ChevronRight, X
 } from 'lucide-react';
 
 const Admin = () => {
-    const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState('User Management');
-    const [activeSidebar, setActiveSidebar] = useState('Membership Management');
-    const [activeSub, setActiveSub] = useState('User Directory');
-    
+    const { user, logout } = useAuth();
+    const [activeTab, setActiveTab] = useState('Dashboard');
     const [users, setUsers] = useState([]);
-    const [finances, setFinances] = useState({ totalDeposits: 0, totalWithdrawals: 0, netFlow: 0 });
+    const [stats, setStats] = useState({ totalUsers: 0, activeUsers: 0, newUsers: 0, totalDeposits: 0, netFlow: 0 });
     const [deposits, setDeposits] = useState([]);
     const [trades, setTrades] = useState([]);
     const [wallets, setWallets] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [editModalUser, setEditModalUser] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchAllData = async () => {
         try {
             const headers = { 'Authorization': `Bearer ${user.token}` };
-            const [uRes, fRes, dRes, tRes, wRes] = await Promise.all([
+            const [uRes, sRes, dRes, tRes, wRes] = await Promise.all([
                 fetch(`${import.meta.env.VITE_API_URL}/admin/users`, { headers }),
-                fetch(`${import.meta.env.VITE_API_URL}/admin/finances`, { headers }),
+                fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, { headers }),
                 fetch(`${import.meta.env.VITE_API_URL}/admin/deposits`, { headers }),
                 fetch(`${import.meta.env.VITE_API_URL}/admin/trades`, { headers }),
-                fetch(`${import.meta.env.VITE_API_URL}/wallets`)
+                fetch(`${import.meta.env.VITE_API_URL}/api/wallets`)
             ]);
 
             setUsers(await uRes.json());
-            setFinances(await fRes.json());
+            setStats(await sRes.json());
             setDeposits(await dRes.json());
             setTrades(await tRes.json());
             setWallets(await wRes.json());
         } catch (e) {
-            console.error('Data fetch error:', e);
+            console.error('Fetch error:', e);
         } finally {
             setLoading(false);
         }
@@ -45,8 +44,8 @@ const Admin = () => {
 
     useEffect(() => {
         fetchAllData();
-        const intv = setInterval(fetchAllData, 10000);
-        return () => clearInterval(intv);
+        const interval = setInterval(fetchAllData, 15000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleAction = async (endpoint, method = 'PUT', body = {}) => {
@@ -60,111 +59,146 @@ const Admin = () => {
                 body: JSON.stringify(body)
             });
             if (res.ok) fetchAllData();
-        } catch (e) { console.error(e); }
+        } catch (e) { alert(e.message); }
     };
 
-    const [selectedUsers, setSelectedUsers] = useState([]);
-
-    const toggleSelectAll = () => {
-        if (selectedUsers.length === users.length) setSelectedUsers([]);
-        else setSelectedUsers(users.map(u => u.id));
-    };
-
-    const toggleSelectUser = (id) => {
-        if (selectedUsers.includes(id)) setSelectedUsers(selectedUsers.filter(uid => uid !== id));
-        else setSelectedUsers([...selectedUsers, id]);
-    };
-
-    const runBulkAction = async (action) => {
-        if (selectedUsers.length === 0) return alert('Select users first');
+    const handleEditSave = async (e) => {
+        e.preventDefault();
+        const u = editModalUser;
+        // Updating user - currently using the new unified endpoint
+        await handleAction(`users/${u.id}`, 'PUT', { 
+            role: u.role, balance: u.balance, 
+            is_frozen: u.is_frozen, allow_withdrawal: u.allow_withdrawal,
+            name: u.name
+        });
         
-        for (const id of selectedUsers) {
-            if (action === 'freeze') await handleAction(`users/${id}/freeze`, 'PUT', { is_frozen: true });
-            if (action === 'thaw') await handleAction(`users/${id}/freeze`, 'PUT', { is_frozen: false });
-            if (action === 'allow_withdrawal') await handleAction(`users/${id}/withdrawable`, 'PUT', { allow_withdrawal: true });
-            if (action === 'prohibit_withdrawal') await handleAction(`users/${id}/withdrawable`, 'PUT', { allow_withdrawal: false });
-            if (action === 'delete') {
-                if (window.confirm('IRREVERSIBLE: Delete selected users?')) {
-                    await handleAction(`users/${id}`, 'DELETE');
-                }
-            }
-        }
-        setSelectedUsers([]);
+        setEditModalUser(null);
     };
 
-    if (loading) return <div className="flex-center" style={{height: '100vh', background: '#f4f5f9'}}>Initializing Management System...</div>;
+    if (loading) return (
+        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F9FAFB' }}>
+            <div style={{ textAlign: 'center' }}>
+                <Database size={40} color="#4F46E5" style={{ marginBottom: '1rem' }} />
+                <div style={{ fontWeight: 600, color: '#374151' }}>Loading Management Center...</div>
+            </div>
+        </div>
+    );
 
-    const renderUserManagement = () => (
-        <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '4px' }}>
-            {/* Action Bar */}
-            <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                <button className="btn-pex-add"><UserPlus size={14} /> Added</button>
-                <button className="btn-pex-freeze" onClick={() => runBulkAction('freeze')}>freeze</button>
-                <button className="btn-pex-thaw" onClick={() => runBulkAction('thaw')}>thaw</button>
-                <button className="btn-pex-allow" onClick={() => runBulkAction('allow_withdrawal')}>Allow withdrawal</button>
-                <button className="btn-pex-prohibit" onClick={() => runBulkAction('prohibit_withdrawal')}>Withdrawal is prohibited</button>
-                <button className="btn-pex-delete" onClick={() => runBulkAction('delete')}><Trash2 size={14} /> delete</button>
-                <button className="btn-pex-notify">Mass Notification</button>
-                
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
-                    <select className="pex-select"><option>All Status</option></select>
-                    <select className="pex-select"><option>All users</option></select>
-                    <input className="pex-input" placeholder="Please enter email" />
+    const filteredUsers = (users || []).filter(u => u.email.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const renderDashboard = () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Stats Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+                <div className="admin-stat-card">
+                    <div className="icon" style={{ background: '#EEF2FF', color: '#4F46E5' }}><Users size={24} /></div>
+                    <div>
+                        <div className="label">Total Users</div>
+                        <div className="value">{stats.totalUsers.toLocaleString()}</div>
+                    </div>
+                </div>
+                <div className="admin-stat-card">
+                    <div className="icon" style={{ background: '#ECFDF5', color: '#10B981' }}><UserCheck size={24} /></div>
+                    <div>
+                        <div className="label">Active Users</div>
+                        <div className="value">{stats.activeUsers.toLocaleString()}</div>
+                    </div>
+                </div>
+                <div className="admin-stat-card">
+                    <div className="icon" style={{ background: '#FFF7ED', color: '#F97316' }}><Bell size={24} /></div>
+                    <div>
+                        <div className="label">Registrations</div>
+                        <div className="value">{stats.newUsers}</div>
+                    </div>
+                </div>
+                <div className="admin-stat-card">
+                    <div className="icon" style={{ background: '#F5F3FF', color: '#8B5CF6' }}><DollarSign size={24} /></div>
+                    <div>
+                        <div className="label">System Balance</div>
+                        <div className="value">${stats.netFlow.toFixed(2)}</div>
+                    </div>
                 </div>
             </div>
 
-            <table className="pex-table">
+            {/* Recent Activities Placeholder */}
+            <div className="admin-table-container">
+                <h3 className="admin-table-title">Recent System Notifications</h3>
+                <div style={{ padding: '1rem', color: '#6B7280' }}>
+                    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid #F3F4F6' }}>
+                        <div style={{ color: '#10B981' }}><UserCheck size={18} /></div>
+                        <div>User <strong>{users[0]?.email}</strong> has logged in.</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem', padding: '1rem 0' }}>
+                        <div style={{ color: '#F97316' }}><Bell size={18} /></div>
+                        <div>System maintenance scheduled for next Saturday.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderUsers = () => (
+        <div className="admin-table-container">
+            <div className="admin-table-header">
+                <h3 className="admin-table-title">User Management</h3>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ position: 'relative' }}>
+                        <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }} />
+                        <input 
+                            placeholder="Find user..." 
+                            className="admin-search-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <button className="admin-btn-secondary"><Filter size={16} /> Filter</button>
+                </div>
+            </div>
+
+            <table className="admin-table">
                 <thead>
                     <tr>
-                        <th style={{ width: '40px' }}><input type="checkbox" onChange={toggleSelectAll} checked={selectedUsers.length === users.length && users.length > 0} /></th>
                         <th>ID</th>
-                        <th>Member Account</th>
-                        <th>USDT balance</th>
-                        <th>Login</th>
-                        <th>Registration IP/Time</th>
-                        <th>address</th>
-                        <th>Recommended by</th>
-                        <th>Certification</th>
-                        <th style={{ textAlign: 'right' }}>Manage</th>
+                        <th>Account</th>
+                        <th>Balance</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th style={{ textAlign: 'right' }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(u => (
-                        <tr key={u.id} className={selectedUsers.includes(u.id) ? 'selected' : ''}>
-                            <td><input type="checkbox" checked={selectedUsers.includes(u.id)} onChange={() => toggleSelectUser(u.id)} /></td>
-                            <td style={{ color: '#6b7280', fontSize: '0.8rem' }}>{u.id.substring(0,4)}</td>
+                    {filteredUsers.map(u => (
+                        <tr key={u.id}>
+                            <td style={{ fontSize: '0.75rem', opacity: 0.6 }}>{u.id.substring(0,8)}</td>
                             <td>
-                                <div style={{ color: '#0ea5e9', fontWeight: 500 }}>{u.email}</div>
-                                {u.is_frozen && <span className="pex-label-danger">Frozen</span>}
-                                {u.allow_withdrawal === false && <span className="pex-label-warning">Withdraw Prohibited</span>}
-                                {u.role === 'admin' && <span className="pex-label-primary">ADMIN</span>}
+                                <div style={{ fontWeight: 600 }}>{u.email}</div>
+                                <div style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Joined: {new Date(u.created_at).toLocaleDateString()}</div>
                             </td>
-                            <td style={{ fontWeight: 600 }}>{Number(u.balance || 0).toFixed(8)}</td>
-                            <td><span style={{ color: '#6b7280' }}>1 time</span></td>
-                            <td style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                <div>Last IP: 127.0.0.1</div>
-                                <div>Time: {new Date(u.created_at).toLocaleString()}</div>
-                            </td>
-                            <td style={{ fontSize: '0.75rem', maxWidth: '150px' }}>
-                                <div style={{ fontWeight: 600 }}>Default</div>
-                                <div className="text-truncate" title={u.id}>{u.id}</div>
-                            </td>
-                            <td style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                No superior
+                            <td><span style={{ fontWeight: 700 }}>${Number(u.balance).toFixed(2)}</span></td>
+                            <td>
+                                <span style={{ 
+                                    padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800,
+                                    background: u.role === 'admin' ? '#FEE2E2' : '#EFF6FF',
+                                    color: u.role === 'admin' ? '#B91C1C' : '#2563EB'
+                                }}>
+                                    {u.role.toUpperCase()}
+                                </span>
                             </td>
                             <td>
-                                <div style={{ color: '#84cc16', fontWeight: 600, fontSize: '0.75rem' }}>Authentication successful</div>
+                                <span style={{ 
+                                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                                    color: u.is_frozen ? '#EF4444' : '#10B981', fontWeight: 600
+                                }}>
+                                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor' }}></div>
+                                    {u.is_frozen ? 'Suspended' : 'Active'}
+                                </span>
                             </td>
                             <td style={{ textAlign: 'right' }}>
                                 <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                                    <button className="pex-mini-btn" onClick={() => {
-                                        const b = prompt('New Balance:', u.balance);
-                                        if (b !== null) handleAction(`users/${u.id}/balance`, 'PUT', { balance: parseFloat(b) });
-                                    }}>Balance</button>
-                                    <button className="pex-mini-btn" onClick={() => {
-                                        const r = u.role === 'admin' ? 'user' : 'admin';
-                                        if (window.confirm(`Swap to ${r}?`)) handleAction(`users/${u.id}/role`, 'PUT', { role: r });
-                                    }}>Role</button>
+                                    <button onClick={() => setEditModalUser(u)} className="admin-mini-btn primary"><Edit size={14} /> Edit</button>
+                                    <button onClick={() => {
+                                        if(window.confirm('Delete user permanent?')) handleAction(`users/${u.id}`, 'DELETE');
+                                    }} className="admin-mini-btn danger"><Trash2 size={14} /></button>
                                 </div>
                             </td>
                         </tr>
@@ -175,367 +209,305 @@ const Admin = () => {
     );
 
     return (
-        <div className="pex-admin-layout">
-            {/* Top Bar */}
-            <header className="pex-header">
-                <div className="pex-logo">
-                    <Database size={24} color="#0ea5e9" />
-                    <span>管理系统</span>
+        <div className="admin-layout">
+            {/* Sidebar */}
+            <aside className="admin-sidebar shadow-xl">
+                <div className="admin-logo-area">
+                    <Database size={28} color="#4F46E5" />
+                    <span>MyCoinBace <small style={{fontSize: '0.6rem', opacity: 0.6, display: 'block'}}>ADMIN DASHBOARD</small></span>
                 </div>
                 
-                <nav className="pex-nav">
-                    {['System Settings', 'User Management', 'Financial Records', 'Trading Center', 'Content Management'].map(tab => (
+                <nav className="admin-side-nav">
+                    {[
+                        { id: 'Dashboard', icon: LayoutDashboard },
+                        { id: 'Users', icon: Users },
+                        { id: 'Finance', icon: CreditCard },
+                        { id: 'Market Trades', icon: BarChart2 },
+                        { id: 'Wallets', icon: Shield },
+                        { id: 'Settings', icon: Settings }
+                    ].map(tab => (
                         <button 
-                            key={tab} 
-                            className={activeTab === tab ? 'active' : ''}
-                            onClick={() => setActiveTab(tab)}
+                            key={tab.id}
+                            className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                            onClick={() => setActiveTab(tab.id)}
                         >
-                            {tab}
+                            <tab.icon size={18} />
+                            {tab.id}
                         </button>
                     ))}
                 </nav>
 
-                <div className="pex-header-right">
-                    <div className="pex-user-dropdown">
-                        <span>admin</span>
-                        <ChevronDown size={14} />
+                <div className="admin-user-footer">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                        <div className="avatar">A</div>
+                        <div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>{user.email.split('@')[0]}</div>
+                            <div style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>Super Admin</div>
+                        </div>
                     </div>
-                    <Trash2 size={18} className="pex-header-icon" />
-                    <Settings size={18} className="pex-header-icon" />
+                    <button onClick={logout} className="logout-btn"><LogOut size={16} /> Logout</button>
                 </div>
-            </header>
+            </aside>
 
-            <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-                {/* Sidebar */}
-                <aside className="pex-sidebar">
-                    <div className="pex-sidebar-item active">
-                        <Users size={16} />
-                        <span>Membership Management</span>
-                        <ChevronDown size={14} style={{ marginLeft: 'auto' }} />
+            {/* Main Center */}
+            <main className="admin-main">
+                <header className="admin-top-bar">
+                    <div style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>Management / {activeTab}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <div style={{ background: '#F3F4F6', padding: '6px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>System: Online</div>
+                        <Edit size={18} style={{ color: '#9CA3AF', cursor: 'pointer' }} />
+                        <Bell size={18} style={{ color: '#9CA3AF', cursor: 'pointer' }} />
                     </div>
-                    <div className="pex-sub-menu">
-                        <div className="pex-sub-item active">User Directory</div>
-                        <div className="pex-sub-item">Agent Management</div>
-                        <div className="pex-sub-item">Administrator Management</div>
-                    </div>
+                </header>
 
-                    <div className="pex-sidebar-item">
-                        <Lock size={16} />
-                        <span>Security Audit</span>
+                <div className="admin-content-inner">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#111827' }}>{activeTab} Overview</h2>
+                        {activeTab === 'Users' && <button className="admin-btn-primary">+ Add New User</button>}
                     </div>
 
-                    <div className="pex-sidebar-group-title">FINANCIAL</div>
-                    <div className="pex-sub-menu" style={{ display: 'block' }}>
-                        <div className="pex-sub-item">Login Log</div>
-                        <div className="pex-sub-item">User Wallet</div>
-                        <div className="pex-sub-item" onClick={() => setActiveSub('Cash Flow')}>Cash flow</div>
-                        <div className="pex-sub-item">Withdrawals Audit</div>
-                    </div>
-
-                    <div className="pex-sidebar-group-title">CONTENT</div>
-                    <div className="pex-sub-menu" style={{ display: 'block' }}>
-                        <div className="pex-sub-item">Notification Management</div>
-                        <div className="pex-sub-item">Online Customer Service</div>
-                    </div>
-                </aside>
-
-                {/* Main Content */}
-                <main className="pex-main">
-                    <div className="pex-breadcrumb">
-                        {activeTab} / {activeSidebar} / {activeSub}
-                    </div>
-
-                    <h2 style={{ marginBottom: '1.5rem', fontWeight: 500, fontSize: '1.25rem' }}>{activeSub}</h2>
-
-                    {activeTab === 'User Management' && renderUserManagement()}
-
-                    {activeTab === 'System Settings' && (
-                        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '4px' }}>
-                            <h3 style={{ marginBottom: '1.5rem' }}>Global Walllet Addresses</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                                {wallets.map(w => (
-                                    <div key={w.id} className="pex-stat-card">
-                                        <div className="flex-between" style={{ marginBottom: '1rem' }}>
-                                            <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{w.coin}</span>
-                                            <button className="btn-pex-allow" style={{ padding: '4px 8px' }} onClick={async () => {
-                                                const addr = prompt('New Address:', w.address);
-                                                if (addr) await handleAction(`wallets/${w.coin}`, 'PUT', { address: addr });
-                                            }}>Change</button>
-                                        </div>
-                                        <div style={{ fontSize: '0.8rem', wordBreak: 'break-all', opacity: 0.7 }}>{w.address}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'Trading Center' && (
-                        <div style={{ background: 'white', padding: '1.5rem', borderRadius: '4px' }}>
-                            <h3 style={{ marginBottom: '1.5rem' }}>Active Market Trades</h3>
-                            <table className="pex-table">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Asset</th>
-                                        <th>Amount</th>
-                                        <th>Duration</th>
-                                        <th>Status</th>
-                                        <th style={{ textAlign: 'right' }}>Resolution</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {trades.map(t => (
-                                        <tr key={t.id}>
-                                            <td>{t.users?.email}</td>
-                                            <td style={{ fontWeight: 700 }}>{t.asset}</td>
-                                            <td style={{ color: '#0ea5e9' }}>${t.amount}</td>
-                                            <td>{t.duration}s</td>
-                                            <td>
-                                                <span className={`pex-label-${t.result === 'pending' ? 'warning' : t.result === 'win' ? 'success' : 'danger'}`}>
-                                                    {t.result}
-                                                </span>
-                                            </td>
-                                            <td style={{ textAlign: 'right' }}>
-                                                {t.result === 'pending' && (
-                                                    <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
-                                                        <button onClick={() => handleAction(`trades/${t.id}/resolve`, 'PUT', { result: 'win' })} className="btn-pex-add">WIN</button>
-                                                        <button onClick={() => handleAction(`trades/${t.id}/resolve`, 'PUT', { result: 'loss' })} className="btn-pex-prohibit">LOSS</button>
-                                                    </div>
-                                                )}
-                                            </td>
+                    {activeTab === 'Dashboard' && renderDashboard()}
+                    {activeTab === 'Users' && renderUsers()}
+                    {activeTab === 'Finance' && (
+                        <div>
+                            <div className="admin-table-container">
+                                <h3 className="admin-table-title">Recent Fund Transactions</h3>
+                                <table className="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Account</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th style={{ textAlign: 'right' }}>Action</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {deposits.map(d => (
+                                            <tr key={d.id}>
+                                                <td>{d.users?.email}</td>
+                                                <td><span style={{ fontWeight: 700, color: '#10B981' }}>DEPOSIT</span></td>
+                                                <td style={{ fontWeight: 800 }}>${d.amount}</td>
+                                                <td>
+                                                    <span className={`admin-badge ${d.status === 'approved' ? 'success' : d.status === 'pending' ? 'warning' : 'danger'}`}>
+                                                        {d.status}
+                                                    </span>
+                                                </td>
+                                                <td>{new Date(d.created_at).toLocaleDateString()}</td>
+                                                <td style={{ textAlign: 'right' }}>
+                                                    {d.status === 'pending' && (
+                                                        <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
+                                                            <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'approved' })} className="admin-mini-btn success">Approve</button>
+                                                            <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} className="admin-mini-btn danger">Reject</button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )}
-                    
-                    {activeTab === 'Financial Records' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                            <div className="pex-stat-group">
-                                <div className="pex-stat-card">
-                                    <div className="label">Total Deposits Approved</div>
-                                    <div className="value success">${finances.totalDeposits.toLocaleString()}</div>
+                    {/* Add other tabs if needed */}
+                    {activeTab === 'Market Trades' && (
+                         <div className="admin-table-container">
+                             <h3 className="admin-table-title">Live Market Orders</h3>
+                             <table className="admin-table">
+                                 <thead>
+                                     <tr>
+                                         <th>User</th>
+                                         <th>Asset</th>
+                                         <th>Amount</th>
+                                         <th>Status</th>
+                                         <th style={{ textAlign: 'right' }}>Resolution</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                     {trades.map(t => (
+                                         <tr key={t.id}>
+                                             <td>{t.users?.email}</td>
+                                             <td style={{fontWeight: 800}}>{t.asset}</td>
+                                             <td>${t.amount}</td>
+                                             <td><span className={`admin-badge ${t.result === 'pending' ? 'warning' : t.result === 'win' ? 'success' : 'danger'}`}>{t.result}</span></td>
+                                             <td style={{ textAlign: 'right' }}>
+                                                 {t.result === 'pending' && (
+                                                      <div style={{ display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
+                                                          <button onClick={() => handleAction(`trades/${t.id}/resolve`, 'PUT', { result: 'win' })} className="admin-mini-btn success">WIN</button>
+                                                          <button onClick={() => handleAction(`trades/${t.id}/resolve`, 'PUT', { result: 'danger' })} className="admin-mini-btn danger">LOSS</button>
+                                                      </div>
+                                                 )}
+                                             </td>
+                                         </tr>
+                                     ))}
+                                 </tbody>
+                             </table>
+                         </div>
+                    )}
+                </div>
+            </main>
+
+            {/* Edit User Modal */}
+            {editModalUser && (
+                <div className="modal-overlay">
+                    <div className="modal-content shadow-2xl">
+                        <div className="modal-header">
+                            <h3 style={{ fontWeight: 800, fontSize: '1.1rem' }}>Edit User Details</h3>
+                            <X size={20} className="close-btn" onClick={() => setEditModalUser(null)} />
+                        </div>
+                        <form onSubmit={handleEditSave} className="modal-form">
+                            <div className="form-group">
+                                <label>Email Address (Public)</label>
+                                <input disabled value={editModalUser.email} />
+                            </div>
+                            <div className="form-grid">
+                                <div className="form-group">
+                                    <label>Role</label>
+                                    <select value={editModalUser.role} onChange={e => setEditModalUser({...editModalUser, role: e.target.value})}>
+                                        <option value="user">User</option>
+                                        <option value="admin">Administrator</option>
+                                    </select>
                                 </div>
-                                <div className="pex-stat-card">
-                                    <div className="label">Total Withdrawals Approved</div>
-                                    <div className="value danger">${finances.totalWithdrawals.toLocaleString()}</div>
-                                </div>
-                                <div className="pex-stat-card">
-                                    <div className="label">Current Bankroll</div>
-                                    <div className="value primary">${finances.netFlow.toLocaleString()}</div>
+                                <div className="form-group">
+                                    <label>Status</label>
+                                    <select value={editModalUser.is_frozen} onChange={e => setEditModalUser({...editModalUser, is_frozen: e.target.value === 'true'})}>
+                                        <option value="false">Active</option>
+                                        <option value="true">Suspended</option>
+                                    </select>
                                 </div>
                             </div>
-
-                            <section className="glass-panel" style={{ background: 'white', padding: '1.5rem', borderRadius: '4px' }}>
-                                <h3 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: 600 }}>Recent Deposits</h3>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <table className="pex-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Email</th>
-                                                <th>Amount</th>
-                                                <th>Coin</th>
-                                                <th>Status</th>
-                                                <th>Date</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {deposits.map(d => (
-                                                <tr key={d.id}>
-                                                    <td>{d.users?.email}</td>
-                                                    <td style={{ fontWeight: 700 }}>{d.amount}</td>
-                                                    <td>{d.coin}</td>
-                                                    <td>
-                                                        <span className={`pex-label-${d.status === 'approved' ? 'success' : d.status === 'pending' ? 'warning' : 'danger'}`}>
-                                                            {d.status}
-                                                        </span>
-                                                    </td>
-                                                    <td>{new Date(d.created_at).toLocaleDateString()}</td>
-                                                    <td>
-                                                        {d.status === 'pending' && (
-                                                            <div style={{ display: 'flex', gap: '5px' }}>
-                                                                <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'approved' })} className="btn-pex-add">Accept</button>
-                                                                <button onClick={() => handleAction(`deposits/${d.id}/status`, 'PUT', { status: 'rejected' })} className="btn-pex-prohibit">Reject</button>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-                    )}
-                </main>
-            </div>
+                            <div className="form-group">
+                                <label>Wallet Balance (USDT)</label>
+                                <input 
+                                    type="number" 
+                                    value={editModalUser.balance} 
+                                    onChange={e => setEditModalUser({...editModalUser, balance: parseFloat(e.target.value)})} 
+                                />
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '1rem' }}>
+                                <button type="submit" className="admin-btn-primary" style={{ flex: 1 }}>Save Changes</button>
+                                <button type="button" onClick={() => setEditModalUser(null)} className="admin-btn-secondary" style={{ flex: 1 }}>Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             <style>{`
-                .pex-admin-layout {
+                .admin-layout {
                     height: 100vh;
                     display: flex;
-                    flex-direction: column;
-                    background: #f4f5f9;
-                    color: #333;
+                    background: #F9FAFB;
+                    color: #111827;
                     font-family: 'Inter', sans-serif;
                 }
-                .pex-header {
-                    height: 60px;
-                    background: #232d3b;
+
+                /* Sidebar */
+                .admin-sidebar {
+                    width: 280px;
+                    background: #111827;
                     display: flex;
-                    align-items: center;
-                    padding: 0 1.5rem;
+                    flex-direction: column;
                     color: white;
                 }
-                .pex-logo {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    font-weight: 700;
-                    font-size: 1.1rem;
-                    margin-right: 3rem;
-                }
-                .pex-nav {
-                    display: flex;
-                    height: 100%;
-                }
-                .pex-nav button {
-                    background: transparent;
-                    border: none;
-                    color: #94a3b8;
-                    padding: 0 1.5rem;
-                    font-size: 0.95rem;
-                    cursor: pointer;
-                    height: 100%;
-                    border-bottom: 3px solid transparent;
-                }
-                .pex-nav button.active {
-                    background: #3b82f633;
-                    color: white;
-                    border-bottom-color: #3b82f6;
-                }
-                .pex-header-right {
-                    margin-left: auto;
-                    display: flex;
-                    align-items: center;
-                    gap: 20px;
-                }
-                .pex-user-dropdown {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    background: #1e293b;
-                    padding: 4px 12px;
-                    border-radius: 4px;
-                    font-size: 0.85rem;
-                }
-                .pex-header-icon {
-                    color: #94a3b8;
-                    cursor: pointer;
-                }
-                
-                .pex-sidebar {
-                    width: 240px;
-                    background: #232d3b;
-                    color: #94a3b8;
-                    padding: 1rem 0;
-                }
-                .pex-sidebar-item {
+                .admin-logo-area {
+                    padding: 2rem;
                     display: flex;
                     align-items: center;
                     gap: 12px;
-                    padding: 0.75rem 1.5rem;
-                    font-size: 0.9rem;
-                    cursor: pointer;
+                    font-weight: 900;
+                    letter-spacing: 0.5px;
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
                 }
-                .pex-sidebar-item.active {
-                    background: #1e293b;
+                .admin-side-nav {
+                    flex: 1;
+                    padding: 1.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+                .nav-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 0.8rem 1rem;
+                    border-radius: 8px;
+                    background: transparent;
+                    color: #9CA3AF;
+                    text-align: left;
+                    border: none;
+                    cursor: pointer;
+                    font-weight: 500;
+                    transition: all 0.2s;
+                }
+                .nav-item:hover {
+                    color: white;
+                    background: rgba(255,255,255,0.05);
+                }
+                .nav-item.active {
+                    background: #4F46E5;
                     color: white;
                 }
-                .pex-sub-menu {
-                    padding-left: 1rem;
+                .admin-user-footer {
+                    padding: 1.5rem;
+                    border-top: 1px solid rgba(255,255,255,0.05);
                 }
-                .pex-sub-item {
-                    padding: 0.5rem 1.5rem;
-                    font-size: 0.85rem;
-                    cursor: pointer;
+                .avatar {
+                    width: 32px; height: 32px; border-radius: 50%; background: #4F46E5; display: flex; align-items: center; justifyContent: center; font-weight: 800; font-size: 0.8rem;
                 }
-                .pex-sub-item.active {
-                    color: #3b82f6;
-                    font-weight: 600;
-                }
-                .pex-sidebar-group-title {
-                    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
-                    font-size: 0.7rem;
-                    font-weight: 800;
-                    letter-spacing: 1px;
-                    color: #475569;
+                .logout-btn {
+                    width: 100%; text-align: left; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #EF4444; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600;
                 }
 
-                .pex-main {
-                    flex: 1;
-                    padding: 1.5rem 2rem;
-                    overflow-y: auto;
-                }
-                .pex-breadcrumb {
-                    font-size: 0.8rem;
-                    color: #64748b;
-                    margin-bottom: 2rem;
-                }
+                /* Main */
+                .admin-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+                .admin-top-bar { height: 64px; background: white; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; px: 2rem; justifyContent: space-between; padding: 0 2rem; }
+                .admin-content-inner { flex: 1; overflow-y: auto; padding: 2rem; }
 
-                /* Table Styles */
-                .pex-table {
-                    width: 100%;
-                    border-collapse: collapse;
+                /* Stats Cards */
+                .admin-stat-card {
+                    background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #E5E7EB; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;
                 }
-                .pex-table th {
-                    background: #f8fafc;
-                    padding: 0.75rem 1rem;
-                    text-align: left;
-                    font-size: 0.8rem;
-                    color: #475569;
-                    font-weight: 600;
-                    border-bottom: 1px solid #e2e8f0;
-                }
-                .pex-table td {
-                    padding: 1rem;
-                    font-size: 0.85rem;
-                    border-bottom: 1px solid #f1f5f9;
-                }
-                .pex-table tr.selected {
-                    background: #eff6ff;
-                }
-                
+                .admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+                .admin-stat-card .icon { border-radius: 12px; padding: 12px; }
+                .admin-stat-card .label { font-size: 0.8rem; color: #6B7280; fontWeight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+                .admin-stat-card .value { font-size: 1.5rem; font-weight: 800; color: #111827; }
+
+                /* Tables */
+                .admin-table-container { background: white; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden; }
+                .admin-table-header { padding: 1.5rem; border-bottom: 1px solid #E5E7EB; display: flex; justifyContent: space-between; align-items: center; }
+                .admin-table-title { margin: 0; fontSize: 1rem; font-weight: 700; color: #111827; }
+                .admin-table { width: 100%; border-collapse: collapse; }
+                .admin-table th { background: #F9FAFB; padding: 1rem; text-align: left; font-size: 0.75rem; color: #6B7280; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #E5E7EB; }
+                .admin-table td { padding: 1.25rem 1rem; font-size: 0.85rem; border-bottom: 1px solid #F3F4F6; }
+                .admin-table tr:hover { background: #F9FAFB; }
+
                 /* Buttons */
-                .btn-pex-add { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; display: flex; gap: 4px; align-items: center; }
-                .btn-pex-freeze { background: #6b7280; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .btn-pex-thaw { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .btn-pex-allow { background: #0ea5e9; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .btn-pex-prohibit { background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .btn-pex-delete { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .btn-pex-notify { background: #10b981; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
-                .pex-mini-btn { background: white; border: 1px solid #e2e8f0; color: #64748b; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; }
-                .pex-mini-btn:hover { background: #f8fafc; color: #3b82f6; border-color: #3b82f6; }
+                .admin-btn-primary { background: #4F46E5; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: transform 0.2s; }
+                .admin-btn-primary:hover { background: #4338CA; transform: scale(1.02); }
+                .admin-btn-secondary { background: white; border: 1px solid #E5E7EB; color: #374151; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+                .admin-mini-btn { border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+                .admin-mini-btn.primary { background: #EEF2FF; color: #4F46E5; }
+                .admin-mini-btn.danger { background: #FEF2F2; color: #EF4444; }
+                .admin-mini-btn.success { background: #ECFDF5; color: #10B981; }
 
-                .pex-select { border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; }
-                .pex-input { border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 4px; font-size: 0.85rem; }
+                .admin-search-input { border: 1px solid #E5E7EB; padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 8px; font-size: 0.85rem; width: 220px; }
+                .admin-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+                .admin-badge.success { background: #ECFDF5; color: #10B981; }
+                .admin-badge.warning { background: #FFF7ED; color: #F97316; }
+                .admin-badge.danger { background: #FEF2F2; color: #EF4444; }
 
-                .pex-label-danger { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; }
-                .pex-label-warning { background: #fff7ed; color: #ea580c; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; }
-                .pex-label-success { background: #f0fdf4; color: #16a34a; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; }
-                .pex-label-primary { background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 5px; }
-
-                .pex-stat-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-                .pex-stat-card { background: white; padding: 1.5rem; border-radius: 4px; border: 1px solid #e2e8f0; }
-                .pex-stat-card .label { font-size: 0.8rem; color: #64748b; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
-                .pex-stat-card .value { font-size: 1.5rem; font-weight: 800; }
-                .pex-stat-card .value.success { color: #10b981; }
-                .pex-stat-card .value.danger { color: #ef4444; }
-                .pex-stat-card .value.primary { color: #3b82f6; }
-
-                .text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                /* Modal */
+                .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justifyContent: center; z-index: 1000; }
+                .modal-content { background: white; width: 440px; border-radius: 16px; overflow: hidden; }
+                .modal-header { padding: 1.5rem; border-bottom: 1px solid #F3F4F6; display: flex; justifyContent: space-between; align-items: center; }
+                .close-btn { color: #9CA3AF; cursor: pointer; }
+                .modal-form { padding: 1.5rem; display: flex; flexDirection: column; gap: 1rem; }
+                .form-group { display: flex; flexDirection: column; gap: 6px; }
+                .form-group label { font-size: 0.75rem; fontWeight: 700; color: #6B7280; text-transform: uppercase; }
+                .form-group input, .form-group select { border: 1px solid #E5E7EB; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; width: 100%; }
+                .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
             `}</style>
         </div>
     );

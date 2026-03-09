@@ -1,36 +1,68 @@
 :root {
-  /* Premium Palette - Dark Mode Focus */
-  --bg-dark: #0b0e11;
-  --bg-surface: #1e2329;
-  --bg-surface-light: #2b3139;
+  /* Premium Palette - Light Mode Focus (PexCoin inspired) */
+  --bg-dark: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-surface-light: #f8f9fa;
   
-  --primary: #f0b90b; /* Binance style Gold for premium feel */
-  --primary-glow: rgba(240, 185, 11, 0.2);
+  --primary: #f0b90b; 
+  --primary-glow: rgba(240, 185, 11, 0.1);
   
   --success: #0ecb81;
-  --success-bg: rgba(14, 203, 129, 0.15);
+  --success-bg: #e6fcf5;
   --danger: #f6465d;
-  --danger-bg: rgba(246, 70, 93, 0.15);
+  --danger-bg: #fff5f5;
   
-  --text-primary: #eaecef;
-  --text-secondary: #848e9c;
-  --text-disabled: #474d57;
+  --text-primary: #1e2329;
+  --text-secondary: #707a8a;
+  --text-disabled: #929aa5;
   
-  --border-light: rgba(255, 255, 255, 0.05);
+  --border-light: #eaeeef;
   --border-active: #f0b90b;
 
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-body {
+html, body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  user-select: none;
+  touch-action: manipulation;
 }
 
-/* Glassmorphism & Cards */
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  width: 100%;
+  max-width: 450px; /* Force mobile view even on desktop for consistency */
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-dark);
+  position: relative;
+  overflow-x: hidden;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 450px) {
+  .container {
+    max-width: 100vw;
+    box-shadow: none;
+  }
+}
 .glass-panel {
   background: var(--bg-surface);
   border-radius: 16px;
@@ -40,8 +72,8 @@ body {
 
 /* Ticker Animation */
 @keyframes ticker {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
 }
 
 .ticker-container {
@@ -107,13 +139,86 @@ body {
 }
 
 /* Dashboard Banner */
-.hero-banner {
+.hero-carousel {
   width: 100%;
-  aspect-ratio: 2.2 / 1;
-  background-size: cover;
-  background-position: center;
+  height: 160px;
+  position: relative;
+  overflow: hidden;
   border-radius: 12px;
   margin: 1rem 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.carousel-slide {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.8s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  opacity: 0;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.carousel-content {
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: all 0.3s;
+}
+
+.dot.active {
+  width: 12px;
+  border-radius: 10px;
+  background: var(--primary);
+}
+
+.price-up { color: var(--success); }
+.price-down { color: var(--danger); }
+
+.market-card {
+  transition: all 0.2s;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.market-card:active {
+  background: var(--bg-surface-light);
+}
+
+@keyframes pulse-price {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.price-pulse {
+    animation: pulse-price 0.4s ease-out;
 }
 
 /* Navigation Utilities */

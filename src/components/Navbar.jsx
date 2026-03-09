@@ -40,28 +40,20 @@ const Navbar = () => {
         {user ? (
           <>
             {user.role === 'admin' && (
-              <Link to="/admin" className="btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
-                Admin Panel
+              <Link to="/admin" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', border: '1px solid #f0b90b', borderRadius: '4px', textDecoration: 'none', color: '#1e2329', fontWeight: 700 }}>
+                Admin
               </Link>
             )}
-            <div className="glass-panel flex-center" style={{ padding: '0.5rem 1rem', gap: '0.5rem', borderRadius: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 12px', background: 'var(--bg-surface-light)', borderRadius: '20px' }}>
               <Wallet size={16} color="var(--primary)" />
-              <span style={{ fontWeight: 600 }}>${Number(user.balance || 0).toFixed(2)}</span>
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1e2329' }}>${Number(user.balance || 0).toFixed(2)}</span>
             </div>
-            
-            <Link to="/deposit" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
-              Deposit
-            </Link>
-
-            <button onClick={handleLogout} className="btn-outline flex-center" style={{ padding: '0.5rem', borderRadius: '50%' }} title="Logout">
-              <LogOut size={16} />
-            </button>
           </>
         ) : (
-          <>
-            <Link to="/auth" className="btn-outline">Login Now</Link>
-            <Link to="/auth?mode=register" className="btn-primary">Create Now</Link>
-          </>
+          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <Link to="/auth" style={{ textDecoration: 'none', color: '#1e2329', fontWeight: 700, fontSize: '0.85rem' }}>Log In</Link>
+            <Link to="/auth?mode=register" style={{ textDecoration: 'none', color: '#5d5fef', fontWeight: 800, fontSize: '0.85rem' }}>Register</Link>
+          </div>
         )}
       </div>
     </nav>

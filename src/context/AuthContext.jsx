@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Error fetching profile:', error);
             setUser({ ...session.user, token });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session) {
-                fetchProfile(session).finally(() => setLoading(false));
+                fetchProfile(session);
             } else {
                 setUser(null);
                 setLoading(false);

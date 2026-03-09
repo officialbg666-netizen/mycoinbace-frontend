@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Home, LineChart, Activity, Wallet, ChevronLeft } from 'lucide-react';
+import { Home, LineChart, Activity, Wallet, ChevronLeft, History, TrendingUp } from 'lucide-react';
 
 const Trading = () => {
     const { user, refreshProfile } = useAuth();
     const [asset, setAsset] = useState('BTC/USDT');
-    const [duration, setDuration] = useState(300);
+    const [duration, setDuration] = useState(60);
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -34,13 +34,13 @@ const Trading = () => {
             const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
             return () => clearTimeout(timer);
         } else if (activeTrade && timeLeft === 0) {
-            setMessage({ type: 'info', text: 'Trade Closed. Waiting for resolution...' });
+            setMessage({ type: 'info', text: 'Order Closed. Admin will resolve soon.' });
         }
     }, [activeTrade, timeLeft]);
 
     const handleTradeSubmit = async (type) => {
         if (!amount || amount <= 0 || amount > user.balance) {
-            setMessage({ type: 'error', text: 'Invalid amount.' });
+            alert('Invalid amount or insufficient balance.');
             return;
         }
         setLoading(true);
@@ -63,7 +63,7 @@ const Trading = () => {
                 await refreshProfile();
             } else {
                 const err = await res.json();
-                setMessage({ type: 'error', text: err.error });
+                alert(err.error);
             }
         } catch (e) {
             console.error(e);
@@ -73,24 +73,43 @@ const Trading = () => {
     };
 
     return (
-        <div className="animate-fade-in" style={{ paddingBottom: '100px', background: 'var(--bg-dark)', minHeight: '100vh' }}>
+        <div className="animate-fade-in" style={{ paddingBottom: '110px', background: 'var(--bg-dark)', minHeight: '100vh' }}>
             {/* Header */}
-            <div className="flex-between" style={{ padding: '1rem', background: 'var(--bg-surface)' }}>
+            <header className="flex-between" style={{ padding: '0.75rem 1rem', background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-light)' }}>
                 <Link to="/dashboard" style={{ color: 'white' }}><ChevronLeft /></Link>
-                <div style={{ fontWeight: 800 }}>{asset}</div>
-                <div style={{ width: '24px' }}></div>
-            </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <img 
+                        src={`https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/${asset.split('/')[0].toLowerCase()}.png`} 
+                        onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${asset.split('/')[0]}&background=random`; }}
+                        alt={asset} 
+                        style={{ width: '22px', height: '22px' }} 
+                    />
+                    <div style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '0.5px' }}>{asset}</div>
+                </div>
+                <Link to="/history" style={{ color: 'var(--primary)' }}><History size={22} /></Link>
+            </header>
+
+            {message && (
+                <div style={{ 
+                    padding: '10px 1rem', 
+                    background: message.type === 'success' ? 'var(--success-bg)' : 'var(--bg-surface-light)',
+                    color: message.type === 'success' ? 'var(--success)' : 'white',
+                    fontSize: '0.8rem', textAlign: 'center', fontWeight: 700 
+                }}>
+                    {message.text}
+                </div>
+            )}
 
             {/* Price section */}
-            <div style={{ padding: '1.5rem 1rem', textAlign: 'center' }}>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--success)' }}>
+            <div style={{ padding: '2rem 1rem', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase' }}>Current Market Price</div>
+                <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--success)', letterSpacing: '-1px' }}>
                     ${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
-                <div style={{ color: 'var(--success)', fontSize: '0.9rem', fontWeight: 600 }}>+2.45% (24H)</div>
             </div>
 
-            {/* Chart Area (Simplified Visualization) */}
-            <div style={{ height: '220px', padding: '0 1rem', display: 'flex', alignItems: 'flex-end', gap: '2px' }}>
+            {/* Chart Area */}
+            <div style={{ height: '180px', padding: '0 1.5rem', display: 'flex', alignItems: 'flex-end', gap: '3px', marginBottom: '2rem' }}>
                 {priceHistory.map((p, i) => {
                     const max = Math.max(...priceHistory);
                     const min = Math.min(...priceHistory);
@@ -99,35 +118,36 @@ const Trading = () => {
                         <div key={i} style={{ 
                             flex: 1, 
                             height: `${h}%`, 
-                            background: 'var(--primary)', 
-                            opacity: 0.6,
-                            borderRadius: '2px 2px 0 0'
+                            background: 'linear-gradient(to top, var(--primary), transparent)', 
+                            opacity: 0.7,
+                            borderRadius: '4px 4px 0 0'
                         }}></div>
                     );
                 })}
             </div>
 
             {/* Trading Panel */}
-            <div style={{ padding: '1.5rem 1rem' }}>
-                <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                    <div className="flex-between" style={{ marginBottom: '1rem', fontSize: '0.85rem' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Account Balance</span>
-                        <span style={{ fontWeight: 700 }}>${Number(user?.balance).toFixed(2)}</span>
+            <div style={{ padding: '0 1rem' }}>
+                <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div className="flex-between" style={{ marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+                        <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Available Balance</span>
+                        <span style={{ fontWeight: 800, color: 'var(--primary)' }}>${Number(user?.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })} USDT</span>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '1.5rem' }}>
-                        {[300, 600, 1000].map(d => (
+                        {[60, 180, 300].map(d => (
                             <button 
                                 key={d}
                                 onClick={() => setDuration(d)}
                                 style={{ 
-                                    padding: '0.6rem', 
-                                    borderRadius: '8px', 
-                                    background: duration === d ? 'var(--primary)' : 'var(--bg-surface-light)',
+                                    padding: '0.75rem', 
+                                    borderRadius: '10px', 
+                                    background: duration === d ? 'var(--primary)' : 'rgba(255,255,255,0.03)',
                                     color: duration === d ? 'black' : 'white',
-                                    fontWeight: 700,
+                                    fontWeight: 800,
                                     border: 'none',
-                                    fontSize: '0.8rem'
+                                    fontSize: '0.8rem',
+                                    transition: '0.2s'
                                 }}
                             >
                                 {d}s
@@ -139,22 +159,22 @@ const Trading = () => {
                         <input 
                             className="input-base"
                             type="number"
-                            placeholder="Amount (USD)"
+                            placeholder="Amount (USDT)"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            style={{ textAlign: 'center', fontSize: '1.2rem', fontWeight: 800 }}
+                            style={{ textAlign: 'center', fontSize: '1.3rem', fontWeight: 900, background: 'rgba(255,255,255,0.02)', padding: '1.2rem' }}
                         />
                     </div>
 
                     {activeTrade ? (
-                        <div style={{ textAlign: 'center', padding: '1rem', background: 'var(--bg-surface-light)', borderRadius: '12px' }}>
-                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Settlement in</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>{timeLeft}s</div>
+                        <div style={{ textAlign: 'center', padding: '1.5rem', background: 'rgba(240, 185, 11, 0.05)', borderRadius: '12px', border: '1px solid rgba(240, 185, 11, 0.2)' }}>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>Active Contract</div>
+                            <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'white' }}>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</div>
                         </div>
                     ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                            <button onClick={() => handleTradeSubmit('BUY UP')} className="btn-primary" style={{ background: 'var(--success)', color: 'white', padding: '1rem' }}>BUY UP</button>
-                            <button onClick={() => handleTradeSubmit('BUY DOWN')} className="btn-primary" style={{ background: 'var(--danger)', color: 'white', padding: '1rem' }}>BUY DOWN</button>
+                            <button onClick={() => handleTradeSubmit('BUY UP')} className="btn-primary" style={{ background: 'var(--success)', color: 'white', padding: '1.1rem', borderRadius: '12px', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)' }}>BUY UP</button>
+                            <button onClick={() => handleTradeSubmit('BUY DOWN')} className="btn-primary" style={{ background: 'var(--danger)', color: 'white', padding: '1.1rem', borderRadius: '12px', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)' }}>BUY DOWN</button>
                         </div>
                     )}
                 </div>
@@ -166,15 +186,15 @@ const Trading = () => {
                     <Home size={22} />
                     <span>Home</span>
                 </Link>
-                <Link to="/trading" className="nav-link active">
-                    <LineChart size={22} />
+                <Link to="/market" className="nav-link">
+                    <TrendingUp size={22} />
                     <span>Market</span>
                 </Link>
-                <Link to="/trading" className="nav-link">
+                <Link to="/trade" className="nav-link active">
                     <Activity size={22} />
-                    <span>Contract</span>
+                    <span>Trade</span>
                 </Link>
-                <Link to="/dashboard" className="nav-link">
+                <Link to="/assets" className="nav-link">
                     <Wallet size={22} />
                     <span>Assets</span>
                 </Link>

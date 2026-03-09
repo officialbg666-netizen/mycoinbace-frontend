@@ -20,38 +20,38 @@ const Landing = () => {
     return (
         <div className="animate-fade-in" style={{ background: 'var(--bg-dark)', minHeight: '100vh' }}>
             {/* Hero Section */}
-            <section style={{ textAlign: 'center', padding: '5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <section style={{ textAlign: 'center', padding: '3rem 1rem 2rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
                     display: 'inline-block', padding: '0.4rem 1rem', 
                     background: 'var(--primary-glow)', color: 'var(--primary)',
-                    borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 700, marginBottom: '2rem',
+                    borderRadius: '2rem', fontSize: '0.7rem', fontWeight: 700, marginBottom: '1.5rem',
                     border: '1px solid var(--primary)'
                 }}>
-                    NEW: ZERO FEE TRADING ENABLED 🚀
+                    ZERO FEE TRADING ENABLED 🚀
                 </div>
                 
-                <h1 style={{ fontSize: '3.5rem', lineHeight: '1', fontWeight: 800, marginBottom: '1.5rem', maxWidth: '800px' }}>
-                    Asia's Leading <br/>
+                <h1 style={{ fontSize: '2.5rem', lineHeight: '1.2', fontWeight: 800, marginBottom: '1rem', width: '100%' }}>
+                    World Leading <br/>
                     <span style={{ color: 'var(--primary)' }}>
                         Crypto Exchange
                     </span>
                 </h1>
                 
-                <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '3rem', maxWidth: '550px', lineHeight: '1.6' }}>
+                <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '2.5rem', width: '100%', lineHeight: '1.5' }}>
                     Join 2M+ users worldwide. Buy, sell, and trade over 200+ cryptocurrencies with premium liquidity.
                 </p>
 
-                <div style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '400px' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', width: '100%' }}>
                     {user ? (
-                        <Link to="/dashboard" className="btn-primary" style={{ flex: 1, padding: '1.2rem' }}>
+                        <Link to="/dashboard" className="btn-primary" style={{ flex: 1, padding: '1.1rem' }}>
                             Go to Console
                         </Link>
                     ) : (
                         <>
-                            <Link to="/auth" style={{ flex: 1, padding: '1.2rem', background: 'var(--primary)', color: 'black', borderRadius: '8px', fontWeight: 700, textAlign: 'center' }}>
+                            <Link to="/auth" style={{ flex: 1, padding: '1.1rem', background: 'var(--primary)', color: 'black', borderRadius: '8px', fontWeight: 700, textAlign: 'center', textDecoration: 'none' }}>
                                 Sign In
                             </Link>
-                            <Link to="/auth?mode=register" style={{ flex: 1, padding: '1.2rem', border: '1px solid var(--border-light)', borderRadius: '8px', fontWeight: 700, textAlign: 'center' }}>
+                            <Link to="/auth?mode=register" style={{ flex: 1, padding: '1.1rem', background: '#5d5fef', borderRadius: '8px', fontWeight: 700, textAlign: 'center', textDecoration: 'none', color: 'white' }}>
                                 Register
                             </Link>
                         </>

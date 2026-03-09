@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+import { ChevronLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 const SUPPORTED_COINS = ['USDT', 'BTC', 'ETH', 'BNB', 'LTC', 'XRP', 'ADA'];
 
 const Withdrawal = () => {
@@ -49,9 +52,14 @@ const Withdrawal = () => {
     };
 
     return (
-        <div className="animate-fade-in" style={{ maxWidth: '600px', margin: '0 auto', paddingBottom: '5rem' }}>
-            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', textAlign: 'center' }}>Request Withdrawal</h1>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
+        <div className="animate-fade-in" style={{ padding: '0 1rem 5rem 1rem' }}>
+            {/* Header */}
+            <header style={{ padding: '1rem 0', display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                 <Link to="/dashboard" style={{ color: 'white', marginRight: '1rem' }}><ChevronLeft /></Link>
+                 <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Request Withdrawal</h1>
+            </header>
+
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
                 Quick and secure payouts to your external wallets.
             </p>
 

@@ -45,8 +45,8 @@ const Auth = () => {
     };
 
     return (
-        <div className="flex-center animate-fade-in" style={{ minHeight: '80vh' }}>
-            <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2.5rem' }}>
+        <div className="flex-center animate-fade-in" style={{ padding: '0 1rem', minHeight: '90vh' }}>
+            <div className="glass-panel" style={{ width: '100%', padding: '1.5rem' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <h2>{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
                     <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
@@ -97,16 +97,29 @@ const Auth = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: '1rem', width: '100%' }}>
-                        {loading ? 'Processing...' : (isRegister ? 'Create Account' : 'Login')}
+                    <button 
+                        type="submit" 
+                        className="btn-primary" 
+                        disabled={loading} 
+                        style={{ 
+                            marginTop: '1rem', width: '100%', 
+                            background: isRegister ? '#5d5fef' : 'var(--primary)',
+                            color: isRegister ? 'white' : 'black',
+                            border: 'none',
+                            padding: '1.1rem',
+                            fontWeight: 800,
+                            borderRadius: '12px'
+                        }}
+                    >
+                        {loading ? 'Processing...' : (isRegister ? 'Register' : 'Sign In')}
                     </button>
                 </form>
 
-                <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                     {isRegister ? (
-                        <>Already have an account? <button onClick={() => setIsRegister(false)} style={{ color: 'var(--primary)', fontWeight: 600 }}>Login here</button></>
+                        <>Already have an account? <button type="button" onClick={() => setIsRegister(false)} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer' }}>Sign in here</button></>
                     ) : (
-                        <>Don't have an account? <button onClick={() => setIsRegister(true)} style={{ color: 'var(--primary)', fontWeight: 600 }}>Create now</button></>
+                        <>Don't have an account? <button type="button" onClick={() => setIsRegister(true)} style={{ background: 'none', border: 'none', color: '#5d5fef', fontWeight: 700, cursor: 'pointer' }}>Register here</button></>
                     )}
                 </div>
             </div>
