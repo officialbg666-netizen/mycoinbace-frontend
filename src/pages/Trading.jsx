@@ -73,36 +73,36 @@ const Trading = () => {
             const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
             return () => clearTimeout(timer);
         } else if (activeTrade && timeLeft === 0) {
-            // Settle dummy trade locally if real backend resolution isn't pushing events yet
-            resolveTrade(activeTrade.id);
+            // Once timer hits zero, we wait for the Admin to manually resolve it
+            setMessage({ type: 'info', text: 'Trade ended. Waiting for system resolution...' });
         }
     }, [activeTrade, timeLeft]);
 
-    const resolveTrade = async (tradeId) => {
-        // Dummy eval: 50% win rate for simulation
-        const isWin = Math.random() > 0.5;
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/trades/${tradeId}/resolve`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-                // Passing a fake admin secret or just simulating the win.
-                // Wait, only admin can hit this route! So we can't settle it from user side.
-                // For the sake of simulation without websockets, we will simulate the UI evaluation
-                // and just pretend it was settled.
-            });
-            // If it fails because of permissions, we just show a mock message anyway.
-        } catch(e) {}
+    // Polling effect to check for Admin resolution
+    useEffect(() => {
+        let pollInterval;
+        if (activeTrade && timeLeft === 0) {
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
+                        headers: { 'Authorization': `Bearer ${user.token}` }
+                    });
+                    if (res.ok) {
+                        const profile = await res.json();
+                        // Check if the balance changed or we can fetch trades
+                        // For simplicity, we just check if activeTrade is still pending in the DB
+                        // But easier to just refresh profile and let the user see the result
+                        await refreshProfile();
+                        // If balance changed or message was success, we can clear this
+                    }
+                } catch (err) {}
+            }, 5000);
+        }
+        return () => clearInterval(pollInterval);
+    }, [activeTrade, timeLeft]);
 
-        setMessage({
-             type: isWin ? 'success' : 'error', 
-             text: `Trade Finished. Result: ${isWin ? 'WIN! (+80%)' : 'LOSS.'}` 
-        });
-        
-        setActiveTrade(null);
-        await refreshProfile(); // Refresh balance if we assume backend simulated it
+    const resolveTrade = async (tradeId) => {
+        // Handled by Admin manually now
     };
 
     const handleTradeSubmit = async (e) => {
