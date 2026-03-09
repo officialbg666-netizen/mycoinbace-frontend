@@ -170,7 +170,11 @@ const Dashboard = () => {
                 {['BTC/USDT', 'BCH/USDT', 'ETH/USDT'].map(symbol => {
                     const data = prices[symbol] || { price: 0, change: 0 };
                     return (
-                        <div key={symbol} style={{ textAlign: 'center' }}>
+                        <Link 
+                            key={symbol} 
+                            to={`/trade?symbol=${encodeURIComponent(symbol)}`}
+                            style={{ textAlign: 'center', textDecoration: 'none', color: 'inherit' }}
+                        >
                             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 700 }}>{symbol}</div>
                             <div style={{ fontSize: '1rem', fontWeight: 800, color: data.change >= 0 ? 'var(--success)' : 'var(--danger)', margin: '4px 0' }}>
                                 {data.price.toFixed(2)}
@@ -178,7 +182,7 @@ const Dashboard = () => {
                             <div style={{ fontSize: '0.75rem', color: data.change >= 0 ? 'var(--success)' : 'var(--danger)', fontWeight: 700 }}>
                                 {data.change >= 0 ? '+' : ''}{data.change.toFixed(2)}%
                             </div>
-                        </div>
+                        </Link>
                     );
                 })}
             </div>
@@ -215,7 +219,7 @@ const Dashboard = () => {
                     const data = prices[coin.symbol] || coin;
                     const isUp = data.change >= 0;
                     return (
-                        <Link key={coin.symbol} to="/trade" className="market-card" style={{ 
+                        <Link key={coin.symbol} to={`/trade?symbol=${encodeURIComponent(coin.symbol)}`} className="market-card" style={{ 
                             display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', alignItems: 'center', 
                             padding: '1.2rem 0', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid var(--border-light)'
                         }}>

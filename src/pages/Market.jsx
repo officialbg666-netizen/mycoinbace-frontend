@@ -43,8 +43,8 @@ const Market = () => {
     return (
         <div className="animate-fade-in" style={{ padding: '0 1rem 5rem 1rem' }}>
             <header style={{ padding: '1rem 0', display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Link to="/dashboard" style={{ color: 'white', marginRight: '1rem' }}><ChevronLeft /></Link>
-                <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>Market Prices</h1>
+                <Link to="/dashboard" style={{ color: 'var(--text-primary)', marginRight: '1rem' }}><ChevronLeft /></Link>
+                <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>Market Prices</h1>
             </header>
 
             <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
@@ -60,7 +60,7 @@ const Market = () => {
                         border: '1px solid var(--border-light)', 
                         padding: '0.75rem 1rem 0.75rem 2.5rem',
                         borderRadius: '12px',
-                        color: 'white',
+                        color: 'var(--text-primary)',
                         fontSize: '0.9rem'
                     }}
                 />
@@ -79,7 +79,7 @@ const Market = () => {
 
                         return (
                             <Link 
-                                to="/trade" 
+                                to={`/trade?symbol=${encodeURIComponent(coin.symbol === 'GOLD' ? 'GOLD' : coin.symbol + '/USDT')}`} 
                                 key={coin.id} 
                                 style={{ 
                                     display: 'grid', 
@@ -87,7 +87,7 @@ const Market = () => {
                                     padding: '1.2rem 0', 
                                     borderBottom: '1px solid var(--border-light)',
                                     textDecoration: 'none',
-                                    color: 'white',
+                                    color: 'var(--text-primary)',
                                     alignItems: 'center'
                                 }}
                             >
