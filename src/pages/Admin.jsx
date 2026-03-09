@@ -5,17 +5,22 @@ const Admin = () => {
     const { user } = useAuth();
     const [users, setUsers] = useState([]);
     const [wallets, setWallets] = useState([]);
+    const [deposits, setDeposits] = useState([]);
+    const [withdrawals, setWithdrawals] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchAdminData = async () => {
         try {
-            const usersRes = await fetch(`${import.meta.env.VITE_API_URL}/admin/users`, {
-                headers: { 'Authorization': `Bearer ${user.token}` }
-            });
+            const headers = { 'Authorization': `Bearer ${user.token}` };
+            const usersRes = await fetch(`${import.meta.env.VITE_API_URL}/admin/users`, { headers });
             const walletsRes = await fetch(`${import.meta.env.VITE_API_URL}/wallets`);
+            const depositsRes = await fetch(`${import.meta.env.VITE_API_URL}/admin/deposits`, { headers });
+            const withdrawalsRes = await fetch(`${import.meta.env.VITE_API_URL}/admin/withdrawals`, { headers });
             
             if (usersRes.ok) setUsers(await usersRes.json());
             if (walletsRes.ok) setWallets(await walletsRes.json());
+            if (depositsRes.ok) setDeposits(await depositsRes.json());
+            if (withdrawalsRes.ok) setWithdrawals(await withdrawalsRes.json());
         } catch (error) {
             console.error(error);
         } finally {
@@ -65,6 +70,23 @@ const Admin = () => {
         }
     };
 
+    const handleStatusUpdate = async (type, id, status) => {
+        if (!window.confirm(`Are you sure you want to ${status} this ${type}?`)) return;
+        try {
+            await fetch(`${import.meta.env.VITE_API_URL}/admin/${type}s/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
+                body: JSON.stringify({ status })
+            });
+            fetchAdminData();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     if (loading) return <div className="flex-center">Loading Admin Panel...</div>;
 
     return (
@@ -72,6 +94,47 @@ const Admin = () => {
             <h1 style={{ marginBottom: '2rem' }}>Admin Control Panel</h1>
 
             <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                
+                {/* Pending Deposits */}
+                <div className="glass-panel" style={{ padding: '2rem', gridColumn: '1 / -1' }}>
+                    <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>Pending Deposits</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {deposits.filter(d => d.status === 'pending').length === 0 && <div style={{color: 'var(--text-muted)'}}>No pending deposits.</div>}
+                        {deposits.filter(d => d.status === 'pending').map(d => (
+                            <div key={d.id} className="flex-between" style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                                <div>
+                                    <div style={{ fontWeight: 600 }}>{d.users?.email}</div>
+                                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{d.coin} - ${d.amount}</div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button className="btn-primary" style={{ padding: '0.5rem 1rem', background: 'var(--success)', fontSize: '0.75rem' }} onClick={() => handleStatusUpdate('deposit', d.id, 'approved')}>Approve</button>
+                                    <button className="btn-outline" style={{ padding: '0.5rem 1rem', color: 'var(--danger)', fontSize: '0.75rem' }} onClick={() => handleStatusUpdate('deposit', d.id, 'rejected')}>Reject</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Pending Withdrawals */}
+                <div className="glass-panel" style={{ padding: '2rem', gridColumn: '1 / -1' }}>
+                    <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>Pending Withdrawals</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        {withdrawals.filter(w => w.status === 'pending').length === 0 && <div style={{color: 'var(--text-muted)'}}>No pending withdrawals.</div>}
+                        {withdrawals.filter(w => w.status === 'pending').map(w => (
+                            <div key={w.id} className="flex-between" style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
+                                <div>
+                                    <div style={{ fontWeight: 600 }}>{w.users?.email}</div>
+                                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{w.coin} to {w.address} - ${w.amount}</div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button className="btn-primary" style={{ padding: '0.5rem 1rem', background: 'var(--success)', fontSize: '0.75rem' }} onClick={() => handleStatusUpdate('withdrawal', w.id, 'approved')}>Approve</button>
+                                    <button className="btn-outline" style={{ padding: '0.5rem 1rem', color: 'var(--danger)', fontSize: '0.75rem' }} onClick={() => handleStatusUpdate('withdrawal', w.id, 'rejected')}>Reject</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Users List */}
                 <div className="glass-panel" style={{ padding: '2rem' }}>
                     <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>User Management</h3>
