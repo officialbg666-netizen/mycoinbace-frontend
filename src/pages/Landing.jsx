@@ -17,112 +17,83 @@ const Landing = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // Only logged-in users access dashboard, but if already logged in, redirecting them from landing might be optional. 
-        // We'll let them look at the landing or click "Go to Dashboard".
-    }, [user]);
-
     return (
-        <div className="animate-fade-in">
+        <div className="animate-fade-in" style={{ background: 'var(--bg-dark)', minHeight: '100vh' }}>
             {/* Hero Section */}
-            <section style={{ textAlign: 'center', padding: '6rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <section style={{ textAlign: 'center', padding: '5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{
-                    display: 'inline-block', padding: '0.5rem 1rem', 
-                    background: 'rgba(59, 130, 246, 0.1)', color: 'var(--primary)',
-                    borderRadius: '2rem', fontSize: '0.875rem', fontWeight: 600, marginBottom: '2rem',
-                    border: '1px solid rgba(59, 130, 246, 0.2)'
+                    display: 'inline-block', padding: '0.4rem 1rem', 
+                    background: 'var(--primary-glow)', color: 'var(--primary)',
+                    borderRadius: '2rem', fontSize: '0.8rem', fontWeight: 700, marginBottom: '2rem',
+                    border: '1px solid var(--primary)'
                 }}>
-                    🚀 The Next Generation Crypto Trading Platform
+                    NEW: ZERO FEE TRADING ENABLED 🚀
                 </div>
                 
-                <h1 className="hero-title" style={{ fontSize: '4rem', lineHeight: '1.1', marginBottom: '1.5rem', maxWidth: '800px' }}>
-                    Trade Crypto with <br/>
-                    <span style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        Lightning Speed
+                <h1 style={{ fontSize: '3.5rem', lineHeight: '1', fontWeight: 800, marginBottom: '1.5rem', maxWidth: '800px' }}>
+                    Asia's Leading <br/>
+                    <span style={{ color: 'var(--primary)' }}>
+                        Crypto Exchange
                     </span>
                 </h1>
                 
-                <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', marginBottom: '3rem', maxWidth: '600px' }}>
-                    Join MyCoinBace today to experience seamless trading, instant deposits, and bank-grade security.
+                <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '3rem', maxWidth: '550px', lineHeight: '1.6' }}>
+                    Join 2M+ users worldwide. Buy, sell, and trade over 200+ cryptocurrencies with premium liquidity.
                 </p>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', width: '100%', maxWidth: '400px' }}>
                     {user ? (
-                        <Link to="/dashboard" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>
-                            Go to Dashboard
+                        <Link to="/dashboard" className="btn-primary" style={{ flex: 1, padding: '1.2rem' }}>
+                            Go to Console
                         </Link>
                     ) : (
                         <>
-                            <Link to="/auth" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>
-                                Get Started
+                            <Link to="/auth" style={{ flex: 1, padding: '1.2rem', background: 'var(--primary)', color: 'black', borderRadius: '8px', fontWeight: 700, textAlign: 'center' }}>
+                                Sign In
                             </Link>
-                            <Link to="/auth?mode=register" className="btn-outline" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem' }}>
-                                Create Account
+                            <Link to="/auth?mode=register" style={{ flex: 1, padding: '1.2rem', border: '1px solid var(--border-light)', borderRadius: '8px', fontWeight: 700, textAlign: 'center' }}>
+                                Register
                             </Link>
                         </>
                     )}
                 </div>
             </section>
 
-            {/* Scrolling Ticker */}
-            <section style={{ margin: '4rem 0', overflow: 'hidden', padding: '2rem 0', position: 'relative' }}>
-                <div style={{
-                     position: 'absolute', top: 0, bottom: 0, left: 0, width: '100px',
-                     background: 'linear-gradient(to right, var(--bg-darker), transparent)', zIndex: 1
-                }}></div>
-                <div style={{
-                     position: 'absolute', top: 0, bottom: 0, right: 0, width: '100px',
-                     background: 'linear-gradient(to left, var(--bg-darker), transparent)', zIndex: 1
-                }}></div>
-                
-                <div style={{ display: 'flex', gap: '2rem', animation: 'scroll 20s linear infinite', width: 'max-content' }}>
-                    {[...FAKE_PAIRS, ...FAKE_PAIRS, ...FAKE_PAIRS].map((coin, i) => (
-                        <div key={i} className="glass-panel" style={{ padding: '1rem 2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '200px' }}>
-                            <div className="flex-between">
-                                <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{coin.pair}</span>
-                                <span style={{ 
-                                    color: coin.change.startsWith('+') ? 'var(--success)' : 'var(--danger)',
-                                    fontWeight: 600, fontSize: '0.875rem',
-                                    background: coin.change.startsWith('+') ? 'var(--success-glow)' : 'var(--danger-glow)',
-                                    padding: '0.2rem 0.5rem', borderRadius: '4px'
-                                }}>
-                                    {coin.change}
-                                </span>
-                            </div>
-                            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>${coin.price}</div>
-                        </div>
-                    ))}
+            {/* Quick Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', padding: '0 1rem', marginBottom: '3rem' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>$1.2B+</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>24H VOLUME</div>
                 </div>
-                <style>{`
-                    @keyframes scroll {
-                        0% { transform: translateX(0); }
-                        100% { transform: translateX(-33.33%); }
-                    }
-                `}</style>
-            </section>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>200+</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>ASSETS</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>0.1%</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>LOW FEES</div>
+                </div>
+            </div>
 
-            {/* Features */}
-            <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', padding: '4rem 0' }}>
-                <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-                    <div className="flex-center" style={{ width: '64px', height: '64px', background: 'var(--success-glow)', color: 'var(--success)', borderRadius: '50%', margin: '0 auto 1.5rem' }}>
-                        <TrendingUp size={32} />
+            {/* Features Card */}
+            <section style={{ padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'var(--success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                         🏦
                     </div>
-                    <h3 style={{ marginBottom: '1rem' }}>Simulated Trading</h3>
-                    <p style={{ color: 'var(--text-muted)' }}>Practice your trading strategies with our advanced 300s/600s/1000s duration trading terminal.</p>
+                    <div>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Secure Storage</h3>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>98% of assets stored offline.</p>
+                    </div>
                 </div>
-                <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-                    <div className="flex-center" style={{ width: '64px', height: '64px', background: 'rgba(59, 130, 246, 0.2)', color: 'var(--primary)', borderRadius: '50%', margin: '0 auto 1.5rem' }}>
-                        <Shield size={32} />
+                <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ width: '50px', height: '50px', borderRadius: '12px', background: 'var(--primary-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                         ⚡
                     </div>
-                    <h3 style={{ marginBottom: '1rem' }}>Bank-grade Security</h3>
-                    <p style={{ color: 'var(--text-muted)' }}>Your assets are secure with modern encryption and architecture.</p>
-                </div>
-                <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
-                    <div className="flex-center" style={{ width: '64px', height: '64px', background: 'rgba(139, 92, 246, 0.2)', color: 'var(--secondary)', borderRadius: '50%', margin: '0 auto 1.5rem' }}>
-                        <Zap size={32} />
+                    <div>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Instant Execute</h3>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Millisecond latency matching.</p>
                     </div>
-                    <h3 style={{ marginBottom: '1rem' }}>Instant execution</h3>
-                    <p style={{ color: 'var(--text-muted)' }}>Experience zero latency trades and instant deposit/withdrawal processing.</p>
                 </div>
             </section>
         </div>
